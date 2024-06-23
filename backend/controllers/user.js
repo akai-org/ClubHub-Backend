@@ -1,46 +1,72 @@
-const {registerUser} = require('../services/user')
+//User Controllers /controllers/user.js
 
-const bcrypt = require('bcrypt')
+const {registerUser, loginUser} = require('../services/user')
 
 const register = async (req, res) => {
+
+    //managing request
     const {email, password, name} = req.body
-    try{
-        let result = await registerUser({email, password, name})
+    let result; 
 
-        if(result.succesfull){
-            console.log("user registered succesfully")
-            res.status(200).json(result);
-        }else{
-            console.log("user not registered")
-            res.status(500).json(result);
-        }
-
-    }catch(error) {
+    try{ result = await registerUser({email, password, name}) }
+    catch(error) {
         console.error('Error in register controller:', error.message);
-        res.status(500).json({ error: 'Failed to register user' });
+        result = { succesfull : false, error: true,  message : "Internal server Error" }
+        console.log(error);
+        
     }
+
+    //managing response
+    if(result.error){ return res.status(500).json(result) }
+
+    if(result.succesfull){
+        res.status(200)
+    }else{
+        if(result.duplicate) 
+            res.status(409); 
+        else 
+            res.status(500);
+    }
+    res.json(result)
 }
 
-const login = (req, res)=>{
-    console.log("/login test")
-    if(!res.verified){
-        console.log("verified"); 
-        //check database for user 
-        const {email, password, name} = req.body
-        if(name === 'Seweryn') //check if credentials are correct
-        {
+const login = async (req, res)=>{
+    const {email, password} = req.body; 
 
-            res.json({
-                message : "login succesfull" + email + password + name,
-                authToken : "23324255" // function to create tokens
-            })
-        }else{
-            res.json({
-                message : "login unsuccesfull"
-            })
-        }
+    if(!(email && password)){
+        res.status(400).json({succesfull :false , message: "Not all neccesary data is in request"})
+        return 
     }
-    res.json({message : "user aready verified with token"}); 
+
+    let result;
+
+    try{ result= await loginUser(req.body) }
+    catch(error){
+        console.error("error: ", error)
+        result = {succesfull : false, error : true,  message : "Internal server Error"}; 
+       
+    }
+
+    if(result.error){ return res.status(500).json(result) }
+
+    if(result.succesfull){
+        res.status(200).json(result)
+    }else {
+        res.status(409).json(result)
+    }
 }
 
 module.exports = {register ,login}
+
+/* 
+register
+    |
+    \/
+login 
+    |
+    \/
+   ...
+    |
+    \/
+logout 
+*/

@@ -1,37 +1,44 @@
 const database = require('../database/mongoose');
+const bcrypt = require('bcrypt');
+const {hash} = require('../utils/hash');
 
 const registerUser = async (userData) => {
-    //check if user is not already in databse 
-    //check if email and eveything is correct from userData variable
-    //hash a password and add user to databse 
+
+    if(await database.checkForUserByEmail(userData.email)){
+        return { succesfull : false, duplicate : true , message : "User with given email already exists", }
+    }
+
+    userData.password = await hash(userData.password)
+    userData.id = Date.now()
 
     let result = await database.createNewUser(userData);
     
     if(result.succesfull){
-        return {
-            succesfull : 1, 
-            duplicate : false,
-            message : "User was registered succesfully"
-        }
-    } else{
-        if(result.duplicate){
-            return {
-                succesfull : false, 
-                duplicate : true,
-                message : "Account already exsiting with given email"
-                }
-        }else{
-            return {
-                succesfull : true,
-                duplicate : false,  
-                message : "User was not registered succesfully, Internal Server problem"
-                }
-        }
-    }
-
-   
+        result.userId = userData.id
+    } 
+    return result     
 };
 
+const loginUser = async (loginData)=>{
+    //checks login data against database if user exists give user a autorization token etc. 
+    //bcrypt.compare
+    const user = await database.checkForUserByEmail(loginData.email); 
+    if(!user){
+        return { succesfull : false, duplicate : true , message : 'Invalid email or password', }
+    }
+
+    const isPasswordCorrect = await bcrypt.compare(loginData.password, user.password); 
+    if(isPasswordCorrect){
+
+        if(!await database.addTokenForUser(user, "12345678")){
+            return {succesfull : false}
+        }
+        return {succesfull : true, token : "123456789" /*user.token*/, id : user.id, message : 'login succesfull'}
+    }
+
+    return {succesfull : false , message :'Invalid email or password'}
+}
+
 module.exports = {
-    registerUser,
+    registerUser, loginUser
 }

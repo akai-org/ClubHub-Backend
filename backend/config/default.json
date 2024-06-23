@@ -1,3 +1,4 @@
 {
-    "mongoURI" : "mongodb://localhost:27017/SciClubHub"
+    "mongoURI" : "mongodb://localhost:27017/SciClubHub", 
+    "bcryptSaltRounds" : 10
 }
