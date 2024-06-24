@@ -1,6 +1,6 @@
 const connectDB = require('../config/db');
-const {User, tokenSchema} = require('../model/userSchema');
-
+const {User} = require('../model/userSchema');
+//mongoose indexes?
 class Database{
     async connect(){
         await connectDB()
@@ -26,6 +26,7 @@ class Database{
 
     async checkForUserByEmail(email){
         try {
+            var emailfield
             const user = await User.findOne({ email: email });
             if(user){
                 return user
@@ -36,6 +37,20 @@ class Database{
             return false
         }
     }
+    async checkForUserByUserName(username){
+        try {
+            var emailfield
+            const user = await User.findOne({ username: username });
+            if(user){
+                return user
+            }
+            return false
+        }catch(err){
+            console.error(err)
+            return false
+        }
+    }
+    
 
     async addTokenForUser(user, token){
         try{
@@ -47,6 +62,10 @@ class Database{
             console.log("error when adding new user auth token ")
             return false
         }
+    }
+
+    async searchClub(name){
+        User.index({ name: 'text', email: 'text' });
     }
 }
 

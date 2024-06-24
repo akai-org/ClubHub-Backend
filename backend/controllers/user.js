@@ -1,14 +1,14 @@
 //User Controllers /controllers/user.js
+const {registerUser, loginUser, findProfileData} = require('../services/user')
 
-const {registerUser, loginUser} = require('../services/user')
 
 const register = async (req, res) => {
 
     //managing request
-    const {email, password, name} = req.body
+    const {email, firstname, lastname, username, password,} = req.body
     let result; 
 
-    try{ result = await registerUser({email, password, name}) }
+    try{ result = await registerUser({email, firstname, lastname, username, password,}) }
     catch(error) {
         console.error('Error in register controller:', error.message);
         result = { succesfull : false, error: true,  message : "Internal server Error" }
@@ -31,11 +31,17 @@ const register = async (req, res) => {
 }
 
 const login = async (req, res)=>{
+
+    if(req.authenticated){
+        res.status(200).json({succesfull : true, message : "User Authenticated by auth token"}); 
+        return
+    }
+
     const {email, password} = req.body; 
 
     if(!(email && password)){
         res.status(400).json({succesfull :false , message: "Not all neccesary data is in request"})
-        return 
+        return
     }
 
     let result;
@@ -44,7 +50,6 @@ const login = async (req, res)=>{
     catch(error){
         console.error("error: ", error)
         result = {succesfull : false, error : true,  message : "Internal server Error"}; 
-       
     }
 
     if(result.error){ return res.status(500).json(result) }
@@ -56,7 +61,31 @@ const login = async (req, res)=>{
     }
 }
 
-module.exports = {register ,login}
+const profile = async (req, res) =>{
+
+    let result
+    if(!req.params.username){
+        res.status(400).json({succesfull : false , message : "path does not contain username param"})
+        return
+    }
+
+    try{
+        result = await findProfileData(req.params.username)
+    } catch(error){
+        res.status(500).json({succesfull : false , message : "Internal Server Error"})
+        return
+    }
+
+    if(result){
+        res.status(200)
+    }else{
+        res.status(404)
+    }
+    res.json(result)
+    
+}
+
+module.exports = {register ,login, profile}
 
 /* 
 register

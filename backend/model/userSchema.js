@@ -11,9 +11,16 @@ const UserSchema = new mongoose.Schema({
     required: true,
     unique: true, 
   },
-  name: {
+  username: {
     type: String,
-    required: true
+    required: true,
+    unique: true,
+  },
+  firstname: {
+    type: String,  
+  },
+  lastname: {
+    type: String,
   },
   email: {
     type: String,
@@ -24,7 +31,7 @@ const UserSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  auth: [tokenSchema],
+  //auth: [tokenSchema],
 });
 
 const User = mongoose.model('usersAccounts', UserSchema);

@@ -1,4 +1,5 @@
 const database = require('../database/mongoose');
+const {createAuthToken} = require('../utils/authtoken')
 const bcrypt = require('bcrypt');
 const {hash} = require('../utils/hash');
 
@@ -6,6 +7,10 @@ const registerUser = async (userData) => {
 
     if(await database.checkForUserByEmail(userData.email)){
         return { succesfull : false, duplicate : true , message : "User with given email already exists", }
+    }
+
+    if(await database.checkForUserByUserName(userData.username)){
+        return { succesfull : false, duplicate : true , message : "User with given user name already exists", }
     }
 
     userData.password = await hash(userData.password)
@@ -29,16 +34,26 @@ const loginUser = async (loginData)=>{
 
     const isPasswordCorrect = await bcrypt.compare(loginData.password, user.password); 
     if(isPasswordCorrect){
-
-        if(!await database.addTokenForUser(user, "12345678")){
-            return {succesfull : false}
-        }
-        return {succesfull : true, token : "123456789" /*user.token*/, id : user.id, message : 'login succesfull'}
+        return {succesfull : true, auth : createAuthToken(user.toObject()) /*user.token*/, id : user._id, message : 'login succesfull'}
     }
 
     return {succesfull : false , message :'Invalid email or password'}
 }
 
+const findProfileData = async (username) =>{
+    if(username){
+        const user = await database.checkForUserByUserName(username)
+        console.log("user: ", user); 
+        if(user){
+            
+            return {succesfull : true, message : "userFound", user : user.toObject()}
+        }
+        return {succesfull : true, message : `user ${username} was not found`} 
+    }
+    throw "username undefined"
+    //return {succesfull : true, message : `username undefined`}
+}
+
 module.exports = {
-    registerUser, loginUser
+    registerUser, loginUser, findProfileData
 }

@@ -1,12 +1,13 @@
 const express = require('express')
-
-var bodyParser = require('body-parser')
+const bodyParser = require('body-parser')
 
 const {log} = require('./utils/loger')
-const {authenticate} = require('./middlewares/auth')
-const {register, login} = require('./controllers/user')
+const {authenticate, authorize} = require('./middlewares/auth')
+const {register, login, profile} = require('./controllers/user')
 
 const {validateUserData} = require('./middlewares/user')
+
+const clubRouter = require("./routes/club")
 
 const app = express()
 
@@ -14,13 +15,16 @@ app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 
 app.use(log)
-
 app.use(authenticate)
 
 
-app.post('/register', validateUserData, register);
+app.use('/club', clubRouter);
 
-app.get('/login', login)
+//user related paths 
+app.post('/register', validateUserData, register);
+app.get('/login', authorize('viewer:owner'), login);
+app.get('/:username', profile);
+
 
 module.exports = app;
 

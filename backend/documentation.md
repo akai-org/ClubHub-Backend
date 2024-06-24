@@ -19,3 +19,38 @@ stores files with databse classes and functions neccesary to manage databse(shou
 ### My Definition of Controller, Service, Middleware used in code managment 
 Controller vs Sevice vs Middleware
 Controller is supposed to handle logic of managing requests and responses where Sevice is supposed to handle buisnes logic of API endpoint(the action which user wants to achive). Middleware on toher hand is similar to Controller however its supposed to be a more of a help function not performing tha main logic of given Route
+
+# API endpoints
+
+### 1. /login
+Logs in user based on given credentials. If User is registerd response will be succesfull and will return authorization token for login session. This token should be later used for user authentication. 
+``` json
+request{
+    email : {type: string, required : true}, 
+    password : {type: string, required : true}
+}
+
+response{
+    succesfull : {type: boolean},
+    message : {type : string}
+}
+```
+
+### 1. /logout
+
+### 2. /register
+``` json
+request: {
+    email : {type: string, required : true}, 
+    password : {type: string, required : true},
+    name : {type: string, required : true}
+}
+response: {
+    succesfull : {type: boolean}, 
+    duplicate : {type: boolean}, 
+    message : {type : string}
+}
+```
+### 3. /:clubname
+### 4. /:clubname/join
+### 5. /:clubname/leave
