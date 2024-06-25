@@ -5,7 +5,7 @@ const {log} = require('./utils/loger')
 const {authenticate, authorize} = require('./middlewares/auth')
 const {register, login, profile} = require('./controllers/user')
 
-const {validateUserData} = require('./middlewares/user')
+const validateRequestBody = require('./middlewares/validateRequestBody')
 
 const clubRouter = require("./routes/club")
 
@@ -21,8 +21,8 @@ app.use(authenticate)
 app.use('/club', clubRouter);
 
 //user related paths 
-app.post('/register', validateUserData, register);
-app.get('/login', authorize('viewer:owner'), login);
+app.post('/register', validateRequestBody("email:username:password"), register);
+app.get('/login', authorize('viewer:user'), login);
 app.get('/:username', profile);
 
 

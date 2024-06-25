@@ -42,13 +42,14 @@ const loginUser = async (loginData)=>{
 
 const findProfileData = async (username) =>{
     if(username){
+
         const user = await database.checkForUserByUserName(username)
-        console.log("user: ", user); 
+        //console.log(`user ${username}: `, user); 
         if(user){
             
             return {succesfull : true, message : "userFound", user : user.toObject()}
         }
-        return {succesfull : true, message : `user ${username} was not found`} 
+        return {succesfull : false, message : `user ${username} was not found`} 
     }
     throw "username undefined"
     //return {succesfull : true, message : `username undefined`}

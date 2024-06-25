@@ -65,7 +65,7 @@ const profile = async (req, res) =>{
 
     let result
     if(!req.params.username){
-        res.status(400).json({succesfull : false , message : "path does not contain username param"})
+        res.status(400).json({succesfull : false , message : "Path does not contain username param"})
         return
     }
 
@@ -76,7 +76,7 @@ const profile = async (req, res) =>{
         return
     }
 
-    if(result){
+    if(result.succesfull){
         res.status(200)
     }else{
         res.status(404)
