@@ -4,7 +4,7 @@ Powerful application designed to manage Science Clubs. Create, join and administ
 ## Setup Instruction
 TO DO :<br>Look at [SETUP_INSTRUCTION.md](SETUP_INSTRUCTION.md)
 ## Documentation
-TO DO :<br>Look at [./backend/documentation.md](SETUP_INSTRUCTION.md)
+TO DO :<br>Look at [documentation.md](./backend/documentation.md)
 ## Technologies
 Project is created with:
 - [NodeJs](https://nodejs.org)
