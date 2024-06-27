@@ -8,11 +8,11 @@ const {hash} = require('../utils/hash');
 const registerUser = async (userData) => {
 
     if(await database.user.FindByEmail(userData.email)){
-        return { success : false, duplicate : true , message : "User with given email already exists", }
+        return { success : false, duplicate : true , message : "User with given email already exists", error :false }
     }
 
     if(await database.user.FindByUserName(userData.username)){
-        return { success : false, duplicate : true , message : "User with given user name already exists", }
+        return { success : false, duplicate : true , message : "User with given user name already exists", error :false }
     }
 
     userData.membership = [];
@@ -28,15 +28,15 @@ const loginUser = async (loginData)=>{
     //bcrypt.compare
     const user = await database.user.FindByEmail(loginData.email); 
     if(!user){
-        return { success : false, message : 'Invalid email or password', }
+        return { success : false, message : 'Invalid email or password', error :false}
     }
 
     const isPasswordCorrect = await bcrypt.compare(loginData.password, user.password); 
     if(isPasswordCorrect){
-        return {success : true, auth : createAuthToken(user.uuid), message : 'Login succesfull'}
+        return {success : true, auth : createAuthToken(user.uuid), message : 'Login succesfull', error :false}
     }
 
-    return {success : false , message :'Invalid email or password'}
+    return {success : false , message :'Invalid email or password', error :false}
 }
 
 const findProfileData = async (username) =>{
@@ -45,9 +45,9 @@ const findProfileData = async (username) =>{
         //console.log(`user ${username}: `, user); 
         if(user){
             
-            return {succesfull : true, message : "userFound", user : user.toObject()}
+            return {success : true, message : "userFound",error : false,  user : user.toObject()}
         }
-        return {succesfull : false, message : `user ${username} was not found`} 
+        return {success : false, message : `user ${username} was not found`, error : false} 
     }
     throw "username undefined"
     //return {succesfull : true, message : `username undefined`}

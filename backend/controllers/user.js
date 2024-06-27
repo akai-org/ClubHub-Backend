@@ -3,17 +3,14 @@ const {registerUser, loginUser, findProfileData} = require('../services/user')
 
 
 const register = async (req, res) => {
-
-    //managing request
-    const {email, firstname, lastname, username, password,} = req.body
     let result; 
 
-    try{ result = await registerUser({email, firstname, lastname, username, password,}) }
+    //service 
+    try{ result = await registerUser(req.body) }
     catch(error) {
         console.error('Error in register controller:', error.message);
         result = { succesfull : false, error: true,  message : "Internal server Error" }
         console.log(error);
-        
     }
 
     //managing response
@@ -22,10 +19,13 @@ const register = async (req, res) => {
     if(result.succesfull){
         res.status(200)
     }else{
-        if(result.duplicate) 
+        if(result.duplicate) {
             res.status(409); 
-        else 
-            res.status(500);
+        }
+        else {
+            res.status(500); 
+            // probably wont ever happen cause of what registerUser service return but its edge case which best is to cover
+        }
     }
     res.json(result)
 }
@@ -33,42 +33,48 @@ const register = async (req, res) => {
 const login = async (req, res)=>{
 
     if(req.authenticated){
-        res.status(200).json({succesfull : true, message : "User Authenticated by auth token"}); 
+        res.status(200).json({succesfull : true, message : "User Authenticated by auth token", error : false}); 
         return
     }
     let result;
 
+    //service 
     try{ result= await loginUser(req.body) }
     catch(error){
         console.error("error: ", error)
         result = {success : false, error : true,  message : "Internal server Error"}; 
     }
 
-    if(result.error){ return res.status(500).json(result) }
-
-    if(result.succesfull){
-        res.status(200).json(result)
-    }else {
-        res.status(409).json(result)
+    // managing response
+    if(result.error){ res.status(500) }
+    else{
+        if(result.success){
+            res.status(200)
+        }else {
+            res.status(409)
+        }
     }
+    res.json(result)
 }
 
 const profile = async (req, res) =>{
 
     let result
     if(!req.params.username){
-        res.status(400).json({succesfull : false , message : "Path does not contain username param"})
+        res.status(400).json({succesfull : false , message : "Path does not contain username param", error : false})
         return
     }
 
-    try{
-        result = await findProfileData(req.params.username)
-    } catch(error){
-        res.status(500).json({succesfull : false , message : "Internal Server Error"})
+    //service 
+    try{ result = await findProfileData(req.params.username) }
+    catch(error){
+        console.error(`Error on path ${req.originalUrl} :`, error)
+        res.status(500).json({success : false ,error : true, message : "Internal Server Error"})
         return
     }
 
-    if(result.succesfull){
+    //managing response 
+    if(result.success){
         res.status(200)
     }else{
         res.status(404)

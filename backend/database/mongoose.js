@@ -13,15 +13,15 @@ class Database{
             const user = User(userdata)
             try{
                 await user.save()
-                return {succesfull : true, duplicate : false, message : "User saved in database"}
+                return {succesfull : true, duplicate : false, message : "User saved in database", error :false}
     
             }catch(err){
                 console.log('Error creating new user: \n', err.name, err.message)
                 if(err.code === 11000 || err.code === 11001)
                 {
-                    return {succesfull : false, duplicate : true, message : "User was not saved in databse"}
+                    return {succesfull : false, duplicate : true, message : "User was not saved in databse", error :false}
                 }else{
-                    return {succesfull : false, duplicate : false, error : true,  message : "User was not saved in databse"}
+                    return {succesfull : false, duplicate : false,  message : "User was not saved in databse", error : true}
                 }
             }
         },
