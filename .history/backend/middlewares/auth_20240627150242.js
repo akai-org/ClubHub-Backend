@@ -55,10 +55,9 @@ function authorize (requiredRoles){
         if(path[1] === 'club' && req.params.clubname){
             if(req.user){ 
                 let result = await database.club.checkMemberShip(req.params.clubname, req.user.uuid)
-                req.permissions = {...req.permissions, ...result}
             }
         }
-        console.log("permisions :", req.permissions)
+
         
         roles = requiredRoles.split(':')
         //check if in required roles, user have one of those role 

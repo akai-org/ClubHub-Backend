@@ -10,8 +10,8 @@ const scienceClubSchema = new mongoose.Schema({
         type : Boolean, 
         deafult : false,
     },
-    admins: [{ type: mongoose.Schema.Types.ObjectId, ref: 'usersAccounts' }],
-    members: [{ type: mongoose.Schema.Types.ObjectId, ref: 'usersAccounts' }],
+    admins: [{ type: String, ref: 'users_accounts' }],
+    members: [{ type:String, ref: 'users_accounts' }],
     univerity: {
         type : String, 
         default : ""
@@ -24,12 +24,12 @@ const scienceClubSchema = new mongoose.Schema({
         type : String, 
         deafult : ""
     },
-    joinrequests : [{ type: mongoose.Schema.Types.ObjectId, ref: 'usersAccounts' }]
+    joinrequests : [{ type: String, ref: 'users_accounts' }]
     //active projects (project schemas?)
     //events
     //meeting
 });
 
-const ScienceClub = mongoose.model('ScienceClubs', scienceClubSchema);
+const ScienceClub = mongoose.model('science_clubs', scienceClubSchema);
 
 module.exports = {ScienceClub};

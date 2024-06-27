@@ -9,7 +9,6 @@ function validateEmail(mail)
 
 
 function validateRequestBody(requiredFields){
-    console.log("validating")
     return (req, res, next)=>{
         if(!requiredFields){
             console.error(`[Argument Error] On Path: ${req.method} ${req.originalUrl} no fields specified in validateRequestBody`)

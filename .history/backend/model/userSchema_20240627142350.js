@@ -10,7 +10,6 @@ const UserSchema = new mongoose.Schema({
     type:String, 
     required: true,
     unique: true, 
-    index : true
   },
   username: {
     type: String,
@@ -36,7 +35,6 @@ const UserSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  membership: [{type:String , ref : 'science_clubs'}]
   //auth: [tokenSchema],
 });
 

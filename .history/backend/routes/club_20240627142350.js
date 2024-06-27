@@ -11,7 +11,7 @@ clubRouter.get('/:clubname', authorize('viewer:member:admin'), club.getClubProfi
 
 clubRouter.post('/:clubname/join',authorize('user'), club.JoinRequest);
 
-clubRouter.get('/:clubname/getJoinRequests', authorize('admin'), club.getJoinRequests);
+clubRouter.get('/:clubname/getJoinRequests', authorize('admin'), (req, res)=>{});
 
 clubRouter.post('/:clubname/resolveJoinRequest', authorize('viewer'),validateRequestBody("requestId:decision"), club.resolveJoinRequest)
 

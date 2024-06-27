@@ -36,12 +36,20 @@ const login = async (req, res)=>{
         res.status(200).json({succesfull : true, message : "User Authenticated by auth token"}); 
         return
     }
+
+    const {email, password} = req.body; 
+
+    if(!(email && password)){
+        res.status(400).json({succesfull :false , message: "Not all neccesary data is in request"})
+        return
+    }
+
     let result;
 
     try{ result= await loginUser(req.body) }
     catch(error){
         console.error("error: ", error)
-        result = {success : false, error : true,  message : "Internal server Error"}; 
+        result = {succesfull : false, error : true,  message : "Internal server Error"}; 
     }
 
     if(result.error){ return res.status(500).json(result) }

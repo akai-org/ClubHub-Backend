@@ -8,18 +8,23 @@ const {hash} = require('../utils/hash');
 const registerUser = async (userData) => {
 
     if(await database.user.FindByEmail(userData.email)){
-        return { success : false, duplicate : true , message : "User with given email already exists", }
+        return { succesfull : false, duplicate : true , message : "User with given email already exists", }
     }
 
     if(await database.user.FindByUserName(userData.username)){
-        return { success : false, duplicate : true , message : "User with given user name already exists", }
+        return { succesfull : false, duplicate : true , message : "User with given user name already exists", }
     }
 
     userData.membership = [];
+
     userData.password = await hash(userData.password)
     userData.uuid = Date.now()
 
     let result = await database.user.Insert(userData);
+    
+    if(result.succesfull){
+        result.userId = userData.id
+    } 
     return result     
 };
 

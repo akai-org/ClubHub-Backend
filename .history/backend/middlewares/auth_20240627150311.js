@@ -58,7 +58,7 @@ function authorize (requiredRoles){
                 req.permissions = {...req.permissions, ...result}
             }
         }
-        console.log("permisions :", req.permissions)
+
         
         roles = requiredRoles.split(':')
         //check if in required roles, user have one of those role 

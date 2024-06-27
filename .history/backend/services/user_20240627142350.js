@@ -8,18 +8,21 @@ const {hash} = require('../utils/hash');
 const registerUser = async (userData) => {
 
     if(await database.user.FindByEmail(userData.email)){
-        return { success : false, duplicate : true , message : "User with given email already exists", }
+        return { succesfull : false, duplicate : true , message : "User with given email already exists", }
     }
 
     if(await database.user.FindByUserName(userData.username)){
-        return { success : false, duplicate : true , message : "User with given user name already exists", }
+        return { succesfull : false, duplicate : true , message : "User with given user name already exists", }
     }
 
-    userData.membership = [];
     userData.password = await hash(userData.password)
     userData.uuid = Date.now()
 
     let result = await database.user.Insert(userData);
+    
+    if(result.succesfull){
+        result.userId = userData.id
+    } 
     return result     
 };
 
@@ -28,15 +31,15 @@ const loginUser = async (loginData)=>{
     //bcrypt.compare
     const user = await database.user.FindByEmail(loginData.email); 
     if(!user){
-        return { success : false, message : 'Invalid email or password', }
+        return { succesfull : false, duplicate : true , message : 'Invalid email or password', }
     }
 
     const isPasswordCorrect = await bcrypt.compare(loginData.password, user.password); 
     if(isPasswordCorrect){
-        return {success : true, auth : createAuthToken(user.uuid), message : 'Login succesfull'}
+        return {succesfull : true, auth : createAuthToken(user.uuid), message : 'login succesfull'}
     }
 
-    return {success : false , message :'Invalid email or password'}
+    return {succesfull : false , message :'Invalid email or password'}
 }
 
 const findProfileData = async (username) =>{

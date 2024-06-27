@@ -1,4 +1,4 @@
-const db = require('../database/mongoose')
+const database = require('../database/mongoose')
 
 const JoinRequest = async (req, res) => {
     let clubName = req.params.clubname
@@ -9,7 +9,7 @@ const JoinRequest = async (req, res) => {
     }
 
     //check if request is not alredy added
-    let result = await db.club.AddJoinRequest(clubName, req.user._id)
+    let result = await database.club.AddJoinRequest(clubName, req.user._id)
     
     if(result.success){
         return res.status(200).json(result)
@@ -27,7 +27,7 @@ const JoinRequest = async (req, res) => {
 const Create = async (req, res) => {
     //add 
     req.body.admins = [req.user.uuid]
-    let result = await db.club.Create(req.body);
+    let result = await database.club.Create(req.body);
     res.status(200).json(result)
 }
 
@@ -41,18 +41,18 @@ const getClubProfile = async (req, res) => {
 const resolveJoinRequest = async (req, res) =>{
     const {decision, requestId} = req.body
     let result;
-    await db.club.removeJoinRequest(req.params.clubname, requestId)
+    await database.club.removeJoinRequest(req.params.clubname, requestId)
     if(decision === true){
-        result = await db.club.AddMember(req.params.clubname, requestId)
+        result = await database.club.AddMember(req.params.clubname, requestId)
     }
     return res.status(200).json({message:"resolve", result :result});
 }
 
 const getJoinRequests = async (req, res) => {
-    const result = await db.club.getJoinRequests(req.params.clubname)
+    const result = db.club.getJoinRequests(req.params.clubname)
     res.status(200).json(result)
 }
 
 module.exports = {
-    JoinRequest, Create,getClubProfile, resolveJoinRequest, getJoinRequests
+    JoinRequest, Create,getClubProfile, resolveJoinRequest
 }

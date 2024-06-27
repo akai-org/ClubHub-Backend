@@ -49,7 +49,7 @@ const resolveJoinRequest = async (req, res) =>{
 }
 
 const getJoinRequests = async (req, res) => {
-    const result = await db.club.getJoinRequests(req.params.clubname)
+    const result = db.club.getJoinRequests(req.params.clubname)
     res.status(200).json(result)
 }
 

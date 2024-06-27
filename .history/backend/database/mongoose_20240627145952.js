@@ -19,9 +19,9 @@ class Database{
                 console.log('Error creating new user: \n', err.name, err.message)
                 if(err.code === 11000 || err.code === 11001)
                 {
-                    return {succesfull : false, duplicate : true, message : "User was not saved in databse"}
+                    return {succesfull : false, duplicate : true, message : "User was not saved in databse", error : err.name, errormsg : err.message}
                 }else{
-                    return {succesfull : false, duplicate : false, error : true,  message : "User was not saved in databse"}
+                    return {succesfull : false, duplicate : false, message : "User was not saved in databse", error : err.name, errormsg : err.message}
                 }
             }
         },
@@ -173,33 +173,16 @@ class Database{
             }
         }, 
         getJoinRequests : async (clubname) =>{
-            let result = await ScienceClub.aggregate([
+            let result = await ScienceClub.agregate([
                 {$match : { name : clubname}}, 
-                {$limit : 1},
                 {$lookup : {
                     from : 'user_accounts', 
                     localField : 'joinrequests', 
                     foreignField : 'uuid', 
                     as : 'join_requests_info'
-                    }}, 
-                { $project : {
-                    name : 1, 
-                    join_requests_info: {
-                        email : 1, 
-                        uuid : 1
                     }
                 }
-
-                }
             ]);
-            result = result[0]
-
-            let validRequests = result.join_requests_info.map(request => request.uuid)
-
-            await ScienceClub.updateOne(
-                { name: result.name },
-                { $set: { joinrequests: validRequests } }
-            );
 
             return result
         }

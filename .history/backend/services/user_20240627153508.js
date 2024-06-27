@@ -20,6 +20,10 @@ const registerUser = async (userData) => {
     userData.uuid = Date.now()
 
     let result = await database.user.Insert(userData);
+    
+    if(result.success){
+        result.userId = userData.id
+    } 
     return result     
 };
 

@@ -22,8 +22,11 @@ app.use('/club', clubRouter);
 
 //user related paths 
 app.post('/register', validateRequestBody("email:username:password"), register);
-app.get('/login', authorize('viewer:user'), login);
+app.get('/login', authorize('viewer:user'), validateRequestBody("email:password"), login);
 app.get('/:username', profile);
+app.get('/:test',authorize('admin:member'), async (req, res)=>{
+    res.json({message: "test"})
+});
 
 
 module.exports = app;

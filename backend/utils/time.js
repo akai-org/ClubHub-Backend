@@ -1,8 +1,8 @@
 function getCurrTime(){
     var currentdate = new Date(); 
-    var datetime = "[" + currentdate.getDate() + "/"
-                + (currentdate.getMonth()+1)  + "/" 
-                + currentdate.getFullYear() + "T"  
+    var datetime = "[" +currentdate.getFullYear() + "-"
+                + (currentdate.getMonth()+1)  + "-" 
+                +  currentdate.getDate() + "T"  
                 + currentdate.getHours() + ":"  
                 + currentdate.getMinutes() + ":" 
                 + currentdate.getSeconds() + "]";

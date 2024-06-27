@@ -36,6 +36,7 @@ const login = async (req, res)=>{
         res.status(200).json({succesfull : true, message : "User Authenticated by auth token"}); 
         return
     }
+
     let result;
 
     try{ result= await loginUser(req.body) }
