@@ -23,7 +23,9 @@ Controller is supposed to handle logic of managing requests and responses where 
 # API endpoints
 
 ### 1. /login
-Logs in user based on given credentials. If User is registerd response will be succesfull and will return authorization token for login session. This token should be later used for user authentication. 
+Logs in user based on given credentials. If User is registerd response will be succesfull and will return authorization token for login session. This token should be later used for user authentication.<br>
+If user has provided "Atuhorization" header will return that User has authenticated himself with token. 
+If login action is not succesfull then variable "success" is false, otherwise true. "auth" is variable holding authorization token for user next API calls in order to identify him. If during API call there will be an error varaible "error" will be added with value true. 
 ``` json
 request{
     email : {type: string, required : true}, 
@@ -31,26 +33,33 @@ request{
 }
 
 response{
-    succesfull : {type: boolean},
-    message : {type : string}
+    success : {type: bool}, 
+    message : {type : string}, 
+    auth : {type :string}
+    error : {type : bool, optional : true }
 }
 ```
-
-### 1. /logout
-
 ### 2. /register
+Register API endpoint takes new user credentials as given. If during user account creation error will occure variable "error" will be added sugesting internal API error.  
 ``` json
 request: {
     email : {type: string, required : true}, 
     password : {type: string, required : true},
-    name : {type: string, required : true}
+    username : {type: string, required : true}, 
+    firstname: {type: String},
+    lastname: {type: String},
+    discrod: {type: String},
 }
 response: {
-    succesfull : {type: boolean}, 
-    duplicate : {type: boolean}, 
-    message : {type : string}
+    success : {type: bool}, 
+    duplicate : {type: bool}, 
+    message : {type : string}, 
+    error : {type : bool, optional : true}
 }
 ```
-### 3. /:clubname
-### 4. /:clubname/join
-### 5. /:clubname/leave
+### 3. /club/create TO DO 
+### 4. /club/:clubname TO DO 
+### 5. /club/:clubname/join TO DO 
+### 6. /club/:clubname/getJoinRequests TO DO
+### 7. /club/:clubname/resolveJoinRequest TO DO 
+### 8. /club/:clubname/leave TO DO 
