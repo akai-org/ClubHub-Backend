@@ -12,7 +12,6 @@ git clone https://github.com/Seweryn-Was/SciClubHub.git
 cd ./SciClubHub/backend
 npm install  
 ```
-
 ### .env
 Create .env file with all enviromental variables which app will use<br>
 example .env 
