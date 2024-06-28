@@ -22,7 +22,7 @@ Controller is supposed to handle logic of managing requests and responses where 
 
 # API endpoints
 
-### 1. /login
+### 1. GET /login
 Logs in user based on given credentials. If User is registerd response will be succesfull and will return authorization token for login session. This token should be later used for user authentication.<br>
 If user has provided "Atuhorization" header will return that User has authenticated himself with token. 
 If login action is not succesfull then variable "success" is false, otherwise true. "auth" is variable holding authorization token for user next API calls in order to identify him. If during API call there will be an error varaible "error" will be added with value true. 
@@ -63,7 +63,7 @@ body: {
 }
 ```
 
-### 2. /register
+### 2. POST /register
 Register API endpoint takes new user credentials as given. If during user account creation error will occure variable "error" will be added sugesting internal API error.  
 
 #### Path Parameters
@@ -110,7 +110,7 @@ None
 }
 ```
 
-### 3. /:username
+### 3. GET /:username
 API endpoint returning data about user with given username. For now all data is being returned held by databse **MUST BE CHANGED**<br>
 #### Path Parameters
 
@@ -154,9 +154,9 @@ Path: /Will
 
 TO DO.
 
-### 3. /club/create TO DO 
-### 4. /club/:clubname TO DO 
-### 5. /club/:clubname/join TO DO 
-### 6. /club/:clubname/getJoinRequests TO DO
-### 7. /club/:clubname/resolveJoinRequest TO DO 
-### 8. /club/:clubname/leave TO DO 
+### 3. POST /club/create TO DO 
+### 4. GET /club/:clubname TO DO 
+### 5. PATCH /club/:clubname/join TO DO 
+### 6. GET /club/:clubname/getJoinRequests TO DO
+### 7. PATCH /club/:clubname/resolveJoinRequest TO DO 
+### 8. --- /club/:clubname/leave TO DO 
