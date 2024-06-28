@@ -66,21 +66,9 @@ class Database{
     }
 
     club = {
-        Create : async (clubData) => {
+        create : async (clubData) => {
             const club = ScienceClub(clubData)
-            try{
-                await club.save()
-                return {succesfull : true, duplicate : false, message : "Club saved in database"}
-    
-            }catch(err){
-                console.log('Error creating new club: \n', err.name, err.message)
-                if(err.code === 11000 || err.code === 11001)
-                {
-                    return {succesfull : false, duplicate : true, message : "Club was not saved in databse", error : err.name, errormsg : err.message}
-                }else{
-                    return {succesfull : false, duplicate : false, message : "Club was not saved in databse", error : err.name, errormsg : err.message}
-                }
-            }
+            await club.save()
         },
     
         FindByName : async (clubName) =>{
@@ -121,18 +109,22 @@ class Database{
             }
         }, 
         removeJoinRequest : async (clubName, request) => {
-            try {
-                const club = await ScienceClub.updateOne({ name: clubName },
-                    {$pull : { joinrequests : request}},
-                    {new : true})
-                    .then((club) => {return club})
-                    .catch( (error) => console.log(error))
+       
+            let club = await ScienceClub.findOne({ name: clubName })
 
-                return { success: true, message: 'join request removed', club };
-            } catch (error) {
-                console.error('Error adding join request to club:', error);
-                return { success: false, error : true, message: 'Error deleting join request', error };
+            if(!club){
+                return {success : false , clubFound : false}
             }
+
+            if(!club.joinrequests.includes(request)){
+                return {success : false,clubFound : true, containsRequest : false}
+            }
+
+            club.joinrequests = club.joinrequests.filter(element => element !== request);
+            await club.save()
+
+            return { success: true, clubFound : true, containsRequest : true};
+
         }, 
         AddMember : async (clubname, userId) => {
             try {

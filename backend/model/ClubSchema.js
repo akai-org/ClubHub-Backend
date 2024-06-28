@@ -12,7 +12,7 @@ const scienceClubSchema = new mongoose.Schema({
     },
     admins: [{ type: String, ref: 'users_accounts' }],
     members: [{ type:String, ref: 'users_accounts' }],
-    univerity: {
+    university: {
         type : String, 
         default : ""
     },

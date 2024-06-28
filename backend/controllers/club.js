@@ -1,34 +1,59 @@
 const db = require('../database/mongoose')
+const clubService = require('../services/club')
 
 const JoinRequest = async (req, res) => {
     let clubName = req.params.clubname
-    //make a request to join or joins a club based on authorization token and userID
-    //if club is open then dont make a request just add user to a club members if club is closed add a request to a club request list
+    let userUuid = req.user.uuid
+
     if(req.permissions.member || req.permissions.admin){
         res.status(200).json({succes: true, message : `Already member of ${clubName}`})
     }
 
-    //check if request is not alredy added
-    let result = await db.club.AddJoinRequest(clubName, req.user._id)
+    //service
+    let result = await clubService.join(userUuid, clubName)
     
+    //managing response
     if(result.success){
-        return res.status(200).json(result)
+        return res.status(200).json(result); 
+    }
+
+    if(!result.clubFound){
+        return res.status(404).json(result); 
     }
 
     if(result.error){
         return res.status(500).json(result)
-    }else{
-        return res.status(409).json(result)
     }
-
-
 }
 
 const Create = async (req, res) => {
-    //add 
-    req.body.admins = [req.user.uuid]
-    let result = await db.club.Create(req.body);
-    res.status(200).json(result)
+
+    const body = req.body
+    let data = {name : body.name, 
+        univeristy : body.university, 
+        isopen : body.isopen, 
+        description : body.description, 
+        rules : body.rules,
+        admins : [req.user.uuid], 
+        members : [], 
+        joinrequests : []
+    }
+    //service
+    let result;
+    result = await clubService.create(data); 
+    
+    //managing response 
+    if(result.success){
+        res.status(200);
+    }else{
+        if(result.duplicate){
+            res.status(409);
+        }
+        if(result.error){
+            res.status(500);
+        }
+    } 
+    res.json(result); 
 }
 
 const getClubProfile = async (req, res) => {
@@ -40,12 +65,22 @@ const getClubProfile = async (req, res) => {
 
 const resolveJoinRequest = async (req, res) =>{
     const {decision, requestId} = req.body
-    let result;
-    await db.club.removeJoinRequest(req.params.clubname, requestId)
-    if(decision === true){
-        result = await db.club.AddMember(req.params.clubname, requestId)
+    const clubName = req.params.clubname
+    
+    let result = await clubService.resolveJoinRequest(requestId, decision, clubName)
+
+    if(result.success){
+        return res.status(200).json(result);
     }
-    return res.status(200).json({message:"resolve", result :result});
+
+    if(!result.requestFound){
+        return res.status(400).json(result);
+    }
+
+    if(result.error){
+        return res.status(500).json(result); 
+    }
+
 }
 
 const getJoinRequests = async (req, res) => {
