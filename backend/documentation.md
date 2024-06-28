@@ -154,9 +154,155 @@ Path: /Will
 
 TO DO.
 
-### 3. POST /club/create TO DO 
+### 3. POST /club/create 
+#### Path Parameters
+None
+#### Request Body 
+
+| Field Name|Required/<br>Optional | Field description | Type|
+|-----------|------------------|-------------------|-----|
+|name       | required         | email owned by user                             | string | 
+|univeristy | optional         |Univeristy name in which science club works      | string | 
+|isopen     | optional         | Should club be free to join or not deafult false| bool   | 
+|descritpion| optional         | small descitpion of science club                | string | 
+|rules      | optional         | rules for members of science club               | string | 
+
+##### Request Example 
+```
+{
+  "name" : "AKAI",
+  "university" : "Poznan Univerity of Technology",
+  "isopen" : false, 
+  "description" : "Akademickie Koło Aplikcaji Internetowych",
+  "rules" : "1. Have Fun"
+}
+```
+
+#### Response Definitions
+
+| Field Name| Field description | Type|
+|-----------|-------------------|-----|
+|success    |informs if request was succesfull| bool| 
+|duplicate  |when trying to create club filed given in "duplicatedFields"<br> were already assigned to other user(must be unique)| bool | 
+|duplicatedFields| duplicated fields which should be unique for user|string array| not implemented yet
+|message    |return inforamtion about result of request| string | 
+|error      |returns true if internal error ocured | bool | 
+
+##### Response Example 
+```
+{
+success : true, 
+duplicate : false, 
+message: "club created succesfuly", 
+error : false
+}
+```
 ### 4. GET /club/:clubname TO DO 
-### 5. PATCH /club/:clubname/join TO DO 
+#### Path Parameters
+
+|Path Parameter| Description |
+|-----------|------------------|
+|clubname   |club name which data wants to be retrived from databse|
+
+#### Request Body 
+
+None
+
+##### Request Example 
+```
+{}
+```
+
+#### Response Definitions
+
+| Field Name| Field description | Type|
+|-----------|-------------------|-----|
+|-    |-| -| 
+
+
+##### Response Example 
+```
+{
+TO DO
+}
+```
+### 5. PATCH /club/:clubname/join
+
+#### Path Parameters
+|Path Parameter| Description |
+|-----------|------------------|
+|clubname   |club name to which user wants to join|
+
+#### Request Body 
+
+None
+
+##### Request Example 
+```
+{}
+```
+
+#### Response Definitions
+
+| Field Name| Field description | Type|
+|-----------|-------------------|-----|
+|success    |informs if request was succesfull| bool| 
+| clubFound | informs if club with name specified in path exists | bool |
+|message    |return inforamtion about result of request| string | 
+|error      |returns true if internal error ocured | bool | 
+
+##### Response Example 
+```
+{
+  success : true , 
+  clubFound: true, 
+  mesasge : 'Club is free to join, user joined Club : AKAI', 
+  error : false
+}
+```
 ### 6. GET /club/:clubname/getJoinRequests TO DO
-### 7. PATCH /club/:clubname/resolveJoinRequest TO DO 
+
+### 7. PATCH /club/:clubname/resolveJoinRequest
+
+#### Path Parameters
+
+|Path Parameter| Description |
+|-----------|------------------|
+|clubname   |club name in which join request is supposed to be resolved|
+
+#### Request Body 
+
+| Field Name|Required/<br>Optional | Field description | Type|
+|-----------|------------------|-------------------|-----|
+|decision   | required         | should join request be accepted(true) or not (false)| bool | 
+|requestId | required         | request id which is supposed to be resolved | string |
+
+##### Request Example 
+```
+{
+  "decision" : true, 
+  "requestId" : 1234567890
+}
+```
+
+#### Response Definitions
+
+| Field Name| Field description | Type|
+|-----------|-------------------|-----|
+|success    |informs if request was succesfull| bool| 
+|requestFound | true if request existed in join requests for club | bool |
+| isMember | returns true if user sucesfully became a member of club | bool| 
+|message    |return inforamtion about result of request| string | 
+|error      |returns true if internal error ocured | bool | 
+
+##### Response Example 
+```
+{
+  success : true, 
+  requestFound : true, 
+  isMember: true, 
+  message : "User : 1234567890 became member of AKAI",
+  error : false}
+```
+
 ### 8. --- /club/:clubname/leave TO DO 
