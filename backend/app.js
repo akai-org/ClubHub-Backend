@@ -3,6 +3,10 @@ const bodyParser = require('body-parser')
 
 const {log} = require('./utils/loger')
 const {authenticate, authorize} = require('./middlewares/auth')
+const {errorHandler} = requre('./middlewares/errorHandler')
+
+const AppError = require('./utils/appError')
+
 const {register, login, profile} = require('./controllers/user')
 
 const validateRequestBody = require('./middlewares/validateRequestBody')
@@ -28,6 +32,11 @@ app.get('/:test',authorize('admin:member'), async (req, res)=>{
     res.json({message: "test"})
 });
 
+app.all('*', (req, res, next) => {
+    next(new AppError ( `This path ${req.originalUrl} isn't on this server!`, 404));
+})
+
+app.use(errorHandler)
 
 module.exports = app;
 
