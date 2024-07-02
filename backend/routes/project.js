@@ -5,9 +5,9 @@ const {newProject, joinProject, editProjectData, getProjects} = require('../cont
 const validateRequestBody = require('../middlewares/validateRequestBody')
 const {authorize} = require('../middlewares/auth')
 
-projectRouter.post('/p/new', authorize('user'), validateRequestBody('name'), newProject)
-projectRouter.post('/p/:projectId/join', authorize('user'), joinProject) //TO FIX
-projectRouter.post('/p/:projectId/edit', authorize('projOwner'), editProjectData) // TO DO 
-projectRouter.get('/p/getProjects', authorize('viewer'), getProjects) //TO DO, FILTERS?
+projectRouter.post('/new', authorize('user'), validateRequestBody('name'), newProject)
+projectRouter.post('/:projectId/join', authorize('user'), joinProject) //TO FIX
+projectRouter.post('/:projectId/edit', authorize('projOwner'), editProjectData) // TO DO 
+projectRouter.get('/getProjects', authorize('viewer'), getProjects) //TO DO, FILTERS?
 
 module.exports = projectRouter;

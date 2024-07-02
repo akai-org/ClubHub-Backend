@@ -5,8 +5,8 @@ const {register, login , profile} = require('../controllers/user')
 const validateRequestBody = require('../middlewares/validateRequestBody')
 const {authorize} = require('../middlewares/auth')
 
-userRouter.post('/u/register', validateRequestBody("email:username:password"), register);
-userRouter.get('/u/login', authorize('viewer:user'), validateRequestBody("email:password"), login);
-userRouter.get('/u/:username', profile);
+userRouter.post('/register', validateRequestBody("email:username:password"), register);
+userRouter.get('/login', authorize('viewer:user'), validateRequestBody("email:password"), login);
+userRouter.get('/:username', profile);
 
 module.exports = userRouter;
