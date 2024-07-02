@@ -20,6 +20,13 @@ stores files with databse classes and functions neccesary to manage databse(shou
 Controller vs Sevice vs Middleware
 Controller is supposed to handle logic of managing requests and responses where Sevice is supposed to handle buisnes logic of API endpoint(the action which user wants to achive). Middleware on toher hand is similar to Controller however its supposed to be a more of a help function not performing tha main logic of given Route
 
+# Error Handling TO DO 
+curently are handled 4 types fo errors 
+- validation - not all required data is provided 
+- cast - data is procided but wrong type
+- duplicate - data record with given data already exists
+- bad path - provided path does not exists
+
 # API endpoints
 
 ### 1. GET /login
