@@ -1,7 +1,7 @@
 const db = require('../database/mongoose')
 const clubService = require('../services/club')
 
-const JoinRequest = async (req, res) => {
+const JoinRequest = async (req, res, next) => {
     let clubName = req.params.clubname
     let userUuid = req.user.uuid
 
@@ -10,7 +10,13 @@ const JoinRequest = async (req, res) => {
     }
 
     //service
-    let result = await clubService.join(userUuid, clubName)
+    let result
+    try{
+        result = await clubService.join(userUuid, clubName)
+    }catch(error){
+        return next(error)
+    }
+    
     
     //managing response
     if(result.success){
@@ -26,7 +32,7 @@ const JoinRequest = async (req, res) => {
     }
 }
 
-const Create = async (req, res) => {
+const Create = async (req, res, next) => {
 
     const body = req.body
     let data = {name : body.name, 
@@ -40,7 +46,12 @@ const Create = async (req, res) => {
     }
     //service
     let result;
-    result = await clubService.create(data); 
+    try{
+        result = await clubService.create(data); 
+    }catch(error){
+        return next(error)
+    }
+
     
     //managing response 
     if(result.success){
@@ -56,18 +67,24 @@ const Create = async (req, res) => {
     res.json(result); 
 }
 
-const getClubProfile = async (req, res) => {
+const getClubProfile = async (req, res, next) => {
     //make a response based on req.permissions for viewer, member and admin
     //return data about given science club
     console.log("checking club profile")
     return res.status(200).json({message:req.params.clubname});
 }
 
-const resolveJoinRequest = async (req, res) =>{
+const resolveJoinRequest = async (req, res, next) =>{
     const {decision, requestId} = req.body
     const clubName = req.params.clubname
     
-    let result = await clubService.resolveJoinRequest(requestId, decision, clubName)
+    let result
+    try {
+        result = await clubService.resolveJoinRequest(requestId, decision, clubName)
+    }catch(error){
+        return next(error)
+    }
+    
 
     if(result.success){
         return res.status(200).json(result);
@@ -83,7 +100,7 @@ const resolveJoinRequest = async (req, res) =>{
 
 }
 
-const getJoinRequests = async (req, res) => {
+const getJoinRequests = async (req, res, next) => {
     const result = await db.club.getJoinRequests(req.params.clubname)
     res.status(200).json(result)
 }

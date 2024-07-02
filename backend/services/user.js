@@ -8,11 +8,11 @@ const {hash} = require('../utils/hash');
 const registerUser = async (userData) => {
 
     if(await database.user.FindByEmail(userData.email)){
-        return { success : false, duplicate : true , message : "User with given email already exists", error :false }
+        return { success : false, status : 'fail' , errType : 'duplicate' , message : "User with given email already exists", error :false }
     }
 
     if(await database.user.FindByUserName(userData.username)){
-        return { success : false, duplicate : true , message : "User with given user name already exists", error :false }
+        return { success : false, status : 'fail' , errType : 'duplicate', error : true , message : "User with given user name already exists", error :false }
     }
 
     userData.membership = [];
@@ -49,8 +49,6 @@ const findProfileData = async (username) =>{
         }
         return {success : false, message : `user ${username} was not found`, error : false} 
     }
-    throw "username undefined"
-    //return {succesfull : true, message : `username undefined`}
 }
 
 module.exports = {

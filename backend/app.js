@@ -28,16 +28,11 @@ app.use('/club', clubRouter);
 app.post('/p/new', authorize('user'), validateRequestBody('name'), newProject)
 app.post('/p/:projectId/join', authorize('user'), joinProject) //TO FIX
 app.post('/p/:projectId/edit', authorize('projOwner'), editProjectData) // TO DO 
-app.get('/p/getProjects', authorize('viewer'), getProjects) //TO DO 
+app.get('/p/getProjects', authorize('viewer'), getProjects) //TO DO, FILTERS?
 
-
-//user related paths 
-app.post('/register', validateRequestBody("email:username:password"), register);
-app.get('/login', authorize('viewer:user'), validateRequestBody("email:password"), login);
+app.post('/u/register', validateRequestBody("email:username:password"), register);
+app.get('/u/login', authorize('viewer:user'), validateRequestBody("email:password"), login);
 app.get('/u/:username', profile);
-app.get('/test',authorize('admin:member'), async (req, res)=>{
-    res.json({message: "test"})
-});
 
 app.all('*', (req, res, next) => {
     next(new AppError ( `This path ${req.originalUrl} isn't on this server!`, 404));

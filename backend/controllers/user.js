@@ -2,15 +2,13 @@
 const {registerUser, loginUser, findProfileData} = require('../services/user')
 
 
-const register = async (req, res) => {
+const register = async (req, res, next) => {
     let result; 
 
     //service 
     try{ result = await registerUser(req.body) }
     catch(error) {
-        console.error('Error in register controller:', error.message);
-        result = { succesfull : false, error: true,  message : "Internal server Error" }
-        console.log(error);
+        return next(error)
     }
 
     //managing response
@@ -30,7 +28,7 @@ const register = async (req, res) => {
     res.json(result)
 }
 
-const login = async (req, res)=>{
+const login = async (req, res, next)=>{
 
     if(req.authenticated){
         res.status(200).json({succesfull : true, message : "User Authenticated by auth token", error : false}); 
@@ -41,8 +39,7 @@ const login = async (req, res)=>{
     //service 
     try{ result= await loginUser(req.body) }
     catch(error){
-        console.error("error: ", error)
-        result = {success : false, error : true,  message : "Internal server Error"}; 
+        return next(error) 
     }
 
     // managing response
@@ -57,7 +54,7 @@ const login = async (req, res)=>{
     res.json(result)
 }
 
-const profile = async (req, res) =>{
+const profile = async (req, res, next) =>{
 
     let result
     if(!req.params.username){
@@ -68,9 +65,7 @@ const profile = async (req, res) =>{
     //service 
     try{ result = await findProfileData(req.params.username) }
     catch(error){
-        console.error(`Error on path ${req.originalUrl} :`, error)
-        res.status(500).json({success : false ,error : true, message : "Internal Server Error"})
-        return
+        return next(error)
     }
 
     //managing response 
