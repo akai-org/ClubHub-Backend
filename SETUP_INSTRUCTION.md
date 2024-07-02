@@ -23,3 +23,4 @@ JWT_SECRET = some_random_string
 |------|---------------|---|
 |`PORT` | port on which backend will recive its all requests|integer|
 |`JWT_SECRET`| secret that will be used for Json Web Tokens to hash certain data |string|
+|`NODE_ENV`| node enviroment `development` or `production` |string|
