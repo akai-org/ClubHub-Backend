@@ -1,6 +1,7 @@
 const connectDB = require('../config/db');
 const {User} = require('../model/userSchema');
 const {ScienceClub} = require('../model/ClubSchema');
+const {Project} = require('../model/projectSchema')
 //mongoose indexes?
 class Database{
     async connect(){
@@ -72,16 +73,11 @@ class Database{
         },
     
         FindByName : async (clubName) =>{
-            try {
-                const club = await ScienceClub.findOne({ name: clubName });
-                if(club){
-                    return club
-                }
-                return false
-            }catch(err){
-                console.error(err)
-                return false
+            const club = await ScienceClub.findOne({ name: clubName });
+            if(club){
+                return club
             }
+            return false
         },
     
         AddJoinRequest : async (clubName, request) => {
@@ -194,6 +190,16 @@ class Database{
             );
 
             return result
+        }
+    }
+
+    project = {
+        findByUuid: async (uuid) =>{
+            const project = await Project.findOne({ uuid: uuid });
+            if(project){
+                return project
+            }
+            return null
         }
     }
 

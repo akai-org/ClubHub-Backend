@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const projectSchema = new mongoose.Schema({
     uuid:{
         type:String, 
-        required: true,
+        required: [true, 'project document must have it\'s uuid'],
         unique: true, 
         index : true
     },
@@ -19,16 +19,17 @@ const projectSchema = new mongoose.Schema({
         type : Boolean, 
         deafult : true, 
     }, 
-    joinfree :  {
+    joinFree :  {
         type : Boolean, 
         deafult : false, 
     }, 
     description : {
         type: String, 
         deafult : "empty",
+        required : true,
     }, 
     owner :{
-        type : string, 
+        type : String, 
         required : true, 
         ref: 'user_accounts'
     },
@@ -46,6 +47,7 @@ const projectSchema = new mongoose.Schema({
         type: String, 
         deafult : 'active'
     }, 
+    joinRequests : [{type:String, ref: 'user_accounts'}]
 });
 
 const Project = mongoose.model('projects', projectSchema);
