@@ -13,12 +13,16 @@ const authenticate = async (req, res, next)=>{
         return next();  
     }
 
-    //for now jwt token holds user data but this will be changed to hold maybe id of user or smth else and based on that will determine user
     const uuid = await validateAuthToken(authToken); 
-    console.log("uuid :",uuid)
+    if(!uuid){
+        req.auth = {status : "Invalid authorization token",}
+        console.log(req.auth.status)
+        return next()
+    }
 
-    const user = await database.user.FindByUUID(uuid)
-    console.log("User :",user)
+    console.log("uuid :",uuid)
+    const user = await database.user.FindByUuid(uuid)
+    //console.log("User :",user)
 
     if(user){
         req.authenticated = true;
@@ -33,18 +37,20 @@ const authenticate = async (req, res, next)=>{
 
 function createpPermisionObj(){
     return{
-        viewer : false, 
+        viewer : true, 
         member : false, 
         admin : false, 
         owner : false, 
         user : false, 
+        project_owner : false, 
+        project_participant : false
+ 
     }
 }
 
 function authorize (requiredRoles){
     return async (req, res, next) => {
         req.permissions = createpPermisionObj(); 
-        req.permissions.viewer = true;
 
         if(req.authenticated){
             req.permissions.user = true
@@ -58,7 +64,22 @@ function authorize (requiredRoles){
                 req.permissions = {...req.permissions, ...result}
             }
         }
+        if(path[1] === 'p' && req.params.projectId){
+            if(req.user){ 
+                let project = await database.project.findByUuid(req.params.projectId)
+                procejt = project.toObject()
+                if(project.owner === req.user.uuid){
+                    req.permissions.project_owner = true;
+                }
+
+                if(project.participants.some(participant =>{ return participant.uuid === req.user.uuid })){ 
+                    req.permissions.project_participant = true
+                }
+            }
+        }
+
         console.log("permisions :", req.permissions)
+        
         
         roles = requiredRoles.split(':')
         //check if in required roles, user have one of those role 

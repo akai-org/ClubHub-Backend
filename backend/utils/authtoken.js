@@ -8,9 +8,14 @@ const createAuthToken = (data) =>{
 }   
 
 const validateAuthToken = (token) => {
-           
-    const decoded = jwt.verify(token, process.env.JWT_SECRET)
-    
+    let decoded
+    try {
+        decoded = jwt.verify(token, process.env.JWT_SECRET)
+    }catch(error){
+        console.error(error.message)
+        return false 
+    }
+
     if(decoded){
         return decoded; 
     }

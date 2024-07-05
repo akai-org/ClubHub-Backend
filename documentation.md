@@ -20,12 +20,39 @@ stores files with databse classes and functions neccesary to manage databse(shou
 Controller vs Sevice vs Middleware
 Controller is supposed to handle logic of managing requests and responses where Sevice is supposed to handle buisnes logic of API endpoint(the action which user wants to achive). Middleware on toher hand is similar to Controller however its supposed to be a more of a help function not performing tha main logic of given Route
 
-# Error Handling TO DO 
+# Error Handling
 curently are handled 4 types fo errors 
 - validation - not all required data is provided 
 - cast - data is procided but wrong type
 - duplicate - data record with given data already exists
 - bad path - provided path does not exists
+if error occures during API request call, response will be returned with fields as given: 
+
+### development enviroment  
+
+| Field Name| Field description | Type|
+|-----------|-------------------|-----|
+|success    |informs if request was succesfull| bool| 
+|status    |fail(if its operational error http status code 4XX) or error(if server error occured http status code 5XX) | string| 
+|statusCode | https status code | string| 
+|errType | error type: `cast`, `duplication`, `validation`| string |
+|isOperational | if error was an operational related with app operations| 
+|message    |error message| string| 
+|stack     | call stack when error occured| string| 
+|error    |object of an error | object| 
+|\<additional\> | additional information might be included depending on error type | string |
+
+### production enviroment 
+
+| Field Name| Field description | Type|
+|-----------|-------------------|-----|
+|success    |informs if request was succesfull| bool| 
+|status    |fail(if its operational error http status code 4XX) or error(if server error occured http status code 5XX) | string| 
+|statusCode | https status code | string| 
+|errType | error type: `cast`, `duplication`, `validation`| string |
+|message    |error message| string| 
+| \<additional\> | additional information might be included depending on error type | string | 
+
 
 # API endpoints
 

@@ -26,7 +26,7 @@ class Database{
                 }
             }
         },
-        FindByUUID : async (id) => {
+        FindByUuid : async (id) => {
             try {
                 const user = await User.findOne({ uuid: id });
                 if(user){
@@ -200,9 +200,85 @@ class Database{
                 return project
             }
             return null
-        }
-    }
+        },
+        findByUuidWithUserData : async (uuid) =>{
 
+            let result = await Project.aggregate([
+                {
+                    $match : {uuid : uuid}
+                }, 
+                {
+                    $lookup : {
+                        from: "user_accounts",
+                        localField: "owner",
+                        foreignField: "uuid",
+                        as: "owner",
+                    }
+                },
+                {
+                    $unwind : "$owner"
+                },
+                {
+                    $lookup : {
+                        from: "user_accounts",
+                        localField: "participants.uuid",
+                        foreignField: "uuid",
+                        as: "partInfo",
+                    }
+                },
+                {
+                    $addFields : {
+                        "participants" : {
+                            $map :{
+                                input: "$participants", 
+                                as : "p", 
+                                in :{
+                                    "responibilities" : "$$p.responsibilities",
+                                    'user': {
+                                        $arrayElemAt : [
+                                            '$partInfo',
+                                            {
+                                            $indexOfArray: [
+                                                '$partInfo.uuid',
+                                                '$$p.uuid'
+                                                ]
+                                            },
+                                        ],
+                                                
+                                    },
+                                }
+                            }
+                        }
+                    }
+                },
+                {
+                    $unset : "partInfo"
+                },
+                {
+                    $project : {
+                        _id : 0, 
+                        __v : 0, 
+                        joinRequests : 0, 
+                        owner : {
+                            password : 0,
+                            __v : 0, 
+                            _id : 0  
+                        },
+                        participants : {
+                            user : {
+                                _id : 0, 
+                                __v : 0,
+                                password : 0
+                            }
+                        } 
+
+                    }
+                }
+            ])
+
+            return result
+        },
+    }
 }
 
 module.exports = new Database(); 

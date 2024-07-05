@@ -6,6 +6,8 @@ const startNew = async (projectData) =>{
 
     let project = new Project(projectData)
     await project.save(); 
+    const { _id, participants,joinRequests , __v ,...resultproject} = project.toObject()
+    return resultproject
 }
 
 const editProjectData = async(editedData)=>{
@@ -13,33 +15,58 @@ const editProjectData = async(editedData)=>{
 }
 
 const joinProject = async (userId, projectId) => {
+
+    let result = {
+        success : false, 
+        correct : {
+            projectId : false, 
+            userId : false
+        },
+        addedJoinRequest : false, 
+        addedParticipants : false, 
+        alreadyJoinRequest : false, 
+        alreadyParticipant : false
+    }
+
     let project = await db.project.findByUuid(projectId)
-    let user = await db.user.FindByUUID(userId)
+    let user = await db.user.FindByUuid(userId)
+
+    result.correct.projectId = project ? true : false; 
+    result.correct.userId = user ? true : false;  
+
     if(!project || !user){
-        let result = {}
-        result.foundProject = project ? true : false; 
-        result.foundUser = user ? true : false;  
         return result
     }
 
     if(project.joinRequests.includes(userId)){
-        return {success : true, message : "user already is on join request list"}
+        result.alreadyJoinRequest = true
+        return result
     }
 
-    if(project.participants.some(participant => {console.log(participant); participant.uuid === userId} )){ // TO FIX !!!
-        return {success : true, message : "user already is a project participant"}
+    if(project.participants.some(participant =>{ return participant.uuid === userId })){
+        result.alreadyParticipant = true
+        return result
     }
 
     if(project.joinFree){
-        project.participants.push(userId)
-        await project.save()
-        return {success : true}
+        result.addedParticipants = true
+        project.participants.push({uuid : userId, responsibilities : []})
+    }else {
+        result.addedJoinRequest = true
+        project.joinRequests.push(userId)
     }
-
-    project.joinRequests.push(userId)
+    result.success = true; 
     await project.save()
-    return {successs : true, joinRequest :true}
-
+    return result 
 }
 
-module.exports = {startNew, joinProject, editProjectData}
+const getOneProjectData = async (projectId) =>{
+
+    let project = await db.project.findByUuidWithUserData(projectId); 
+
+    return project
+}
+
+
+
+module.exports = {startNew, joinProject, editProjectData,getOneProjectData}

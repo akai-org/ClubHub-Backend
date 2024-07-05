@@ -17,15 +17,15 @@ const projectSchema = new mongoose.Schema({
     }, 
     visible : {
         type : Boolean, 
-        deafult : true, 
+        default : true, 
     }, 
     joinFree :  {
         type : Boolean, 
-        deafult : false, 
+        default : false, 
     }, 
     description : {
         type: String, 
-        deafult : "empty",
+        default : "empty",
         required : true,
     }, 
     owner :{
@@ -33,19 +33,22 @@ const projectSchema = new mongoose.Schema({
         required : true, 
         ref: 'user_accounts'
     },
-    participants : [ { userUuid: {
-        type:String, 
-        ref: 'user_accounts'
-    }, 
-    responsibilities : [{ type: String }]
-    }], 
+    participants : [ 
+        { _id :false,
+        uuid: {
+            type: String, 
+            ref: 'user_accounts'
+        }, 
+        responsibilities : [{ type: String }]
+        }
+    ], 
     externalSources :  [{ type: String }],
     involvedScienceClubs : [{ type: String, ref: 'science_clubs' }],
     technologies : [{ type: String }], 
     tags : [{ type: String }],
     currentState: { 
         type: String, 
-        deafult : 'active'
+        default : 'active'
     }, 
     joinRequests : [{type:String, ref: 'user_accounts'}]
 });

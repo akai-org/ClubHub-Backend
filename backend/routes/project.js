@@ -1,13 +1,17 @@
 const express = require('express');
 const projectRouter = express.Router();
 
-const {newProject, joinProject, editProjectData, getProjects} = require('../controllers/project')
+const {newProject, joinProject, editProjectData, getProjects, getOneProject} = require('../controllers/project')
 const validateRequestBody = require('../middlewares/validateRequestBody')
 const {authorize} = require('../middlewares/auth')
 
+//POST
 projectRouter.post('/new', authorize('user'), validateRequestBody('name'), newProject)
-projectRouter.post('/:projectId/join', authorize('user'), joinProject) //TO FIX
-projectRouter.post('/:projectId/edit', authorize('projOwner'), editProjectData) // TO DO 
-projectRouter.get('/getProjects', authorize('viewer'), getProjects) //TO DO, FILTERS?
+projectRouter.post('/:projectId/join', authorize('user'), joinProject)
+projectRouter.post('/:projectId/edit', authorize('project_owner'), editProjectData) // TO DO 
+
+//GET
+projectRouter.get('/:projectId', authorize('viewer'), getOneProject)
+projectRouter.get('/getProjects', authorize('viewer'), getProjects)
 
 module.exports = projectRouter;

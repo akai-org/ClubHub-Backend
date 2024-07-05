@@ -8,8 +8,8 @@
 
 ### Set up 
 ``` bash
-git clone https://github.com/Seweryn-Was/SciClubHub.git
-cd ./SciClubHub/backend
+git https://github.com/akai-org/ClubHub-Backend.git
+cd ./ClubHub-backend/backend
 npm install  
 ```
 ### .env

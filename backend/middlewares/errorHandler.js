@@ -13,6 +13,9 @@ const prodError = (err, appErr, res) =>{
       res.status(500).json({
         success : false, 
         status: "error",
+        statusCode : 500,
+        errType : 'Internal',
+        isOperational : false, 
         message: "Internal server error",
       });
     }
@@ -20,7 +23,7 @@ const prodError = (err, appErr, res) =>{
 
 const devError = (err, appErr, res) =>{
   console.log("dev Error")
-  res.status(err.statusCode).json({
+  res.status(appErr.statusCode).json({
       success : false, 
       status: err.status,
       ...appErr,
@@ -54,15 +57,15 @@ const logErrors = (err, req, res, next) =>{
 }
 
 const errorHandler = (err, req, res, next) =>{
+  let appErr = new AppError("Internal Error", 500); 
   err.statusCode = err.statusCode || 500;
   err.status = err.status || "error";
-
-  let appErr; 
 
   if (err.name === "CastError") appErr = castErrorHandler(err);
   if (err. name === "ValidationError") appErr = validationErrorHandler (err); //error when not all fields are provided but are required
   if (err.code === 11000 || err.code === 11001) appErr = duplicateErrorHandler(err); //error code is mongodb specific check mongodb documentation for more info
   if (err instanceof AppError) appErr = err; 
+
 
 
   if (process.env.NODE_ENV === "development") {
