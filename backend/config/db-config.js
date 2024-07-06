@@ -15,6 +15,7 @@ const connectDB = async () => {
     mongoose.connection.on('close', () => console.log(getCurrTime(),'MongoDB is closed'));
 
     await mongoose.connect(dbURI, {/* options for mongoDB */});
+
   } catch (err) {
     console.log(getCurrTime(), "MongoDB not connected : ")
     console.error(err.message);

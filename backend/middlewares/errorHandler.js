@@ -13,9 +13,7 @@ const prodError = (err, appErr, res) =>{
       res.status(500).json({
         success : false, 
         status: "error",
-        statusCode : 500,
         errType : 'Internal',
-        isOperational : false, 
         message: "Internal server error",
       });
     }

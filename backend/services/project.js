@@ -1,12 +1,12 @@
-const db = require('../database/mongoose')
-const {Project} = require('../model/projectSchema')
+const db = require('../repositories/mongoose/index');
+
 
 const startNew = async (projectData) =>{
     projectData.uuid = Date.now(); //need to change to create some proper uuid
 
-    let project = new Project(projectData)
-    await project.save(); 
-    const { _id, participants,joinRequests , __v ,...resultproject} = project.toObject()
+    let project = await db.projectRepo.insert(projectData)
+    
+    const { _id, participants,joinRequests , __v ,...resultproject} = project
     return resultproject
 }
 
@@ -28,13 +28,14 @@ const joinProject = async (userId, projectId) => {
         alreadyParticipant : false
     }
 
-    let project = await db.project.findByUuid(projectId)
-    let user = await db.user.FindByUuid(userId)
+    let project = await db.projectRepo.findByUuid(projectId)
+    let user = await db.userRepo.FindByUuid(userId)
 
     result.correct.projectId = project ? true : false; 
     result.correct.userId = user ? true : false;  
 
     if(!project || !user){
+        console.log("no user or project")
         return result
     }
 
@@ -50,19 +51,18 @@ const joinProject = async (userId, projectId) => {
 
     if(project.joinFree){
         result.addedParticipants = true
-        project.participants.push({uuid : userId, responsibilities : []})
+        db.projectRepo.addParticipant(projectId, userId)
     }else {
         result.addedJoinRequest = true
-        project.joinRequests.push(userId)
+        db.projectRepo.addJoinRequest(projectId, userId)
     }
     result.success = true; 
-    await project.save()
     return result 
 }
 
 const getOneProjectData = async (projectId) =>{
 
-    let project = await db.project.findByUuidWithUserData(projectId); 
+    let project = await db.projectRepo.findByUuidWithUserData(projectId); 
 
     return project
 }

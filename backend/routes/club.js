@@ -7,9 +7,9 @@ const clubRouter = express.Router();
 
 clubRouter.get('/create', authorize('user'), validateRequestBody("name:university:description"), club.Create);
 clubRouter.get('/:clubname', authorize('viewer:member:admin'), club.getClubProfile); //TO DO 
-clubRouter.patch('/:clubname/join',authorize('user'), club.JoinRequest);
+clubRouter.post('/:clubname/join',authorize('user'), club.JoinRequest);
 clubRouter.get('/:clubname/getJoinRequests', authorize('admin'), club.getJoinRequests); // to do service
-clubRouter.patch('/:clubname/resolveJoinRequest', authorize('viewer'),validateRequestBody("requestId:decision"), club.resolveJoinRequest)
+clubRouter.post('/:clubname/resolveJoinRequest', authorize('viewer'),validateRequestBody("requestId:decision"), club.resolveJoinRequest)
 clubRouter.post('/:clubname/leave',authorize('user'), (req, res) => {
     res.status(200).json({message:`leave ${req.params.name}`});
 });

@@ -1,17 +1,15 @@
-const database = require('../database/mongoose');
+const db = require('../repositories/mongoose/index');
 const {createAuthToken} = require('../utils/authtoken')
 const bcrypt = require('bcrypt');
 const {hash} = require('../utils/hash');
 
-
-
 const registerUser = async (userData) => {
 
-    if(await database.user.FindByEmail(userData.email)){
+    if(await db.userRepo.FindByEmail(userData.email)){
         return { success : false, status : 'fail' , errType : 'duplicate' , message : "User with given email already exists", error :false }
     }
 
-    if(await database.user.FindByUserName(userData.username)){
+    if(await db.userRepo.FindByUserName(userData.username)){
         return { success : false, status : 'fail' , errType : 'duplicate', error : true , message : "User with given user name already exists", error :false }
     }
 
@@ -19,14 +17,14 @@ const registerUser = async (userData) => {
     userData.password = await hash(userData.password)
     userData.uuid = Date.now()
 
-    let result = await database.user.Insert(userData);
+    let result = await db.userRepo.Insert(userData);
     return result     
 };
 
 const loginUser = async (loginData)=>{
     //checks login data against database if user exists give user a autorization token etc. 
     //bcrypt.compare
-    const user = await database.user.FindByEmail(loginData.email); 
+    const user = await db.userRepo.FindByEmail(loginData.email); 
     if(!user){
         return { success : false, message : 'Invalid email or password', error :false}
     }
@@ -41,7 +39,7 @@ const loginUser = async (loginData)=>{
 
 const findProfileData = async (username) =>{
     if(username){
-        const user = await database.user.FindByUserName(username)
+        const user = await db.userRepo.FindByUserName(username)
         //console.log(`user ${username}: `, user); 
         if(user){
             

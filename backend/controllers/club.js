@@ -1,4 +1,3 @@
-const db = require('../database/mongoose')
 const clubService = require('../services/club')
 
 const JoinRequest = async (req, res, next) => {
@@ -6,7 +5,7 @@ const JoinRequest = async (req, res, next) => {
     let userUuid = req.user.uuid
 
     if(req.permissions.member || req.permissions.admin){
-        res.status(200).json({succes: true, message : `Already member of ${clubName}`})
+        return res.status(200).json({succes: true, message : `Already member of ${clubName}`})
     }
 
     //service
@@ -101,8 +100,8 @@ const resolveJoinRequest = async (req, res, next) =>{
 }
 
 const getJoinRequests = async (req, res, next) => {
-    const result = await db.club.getJoinRequests(req.params.clubname)
-    res.status(200).json(result)
+    //const result = await db.club.getJoinRequests(req.params.clubname)
+    res.status(200).json({to_do:true})
 }
 
 module.exports = {

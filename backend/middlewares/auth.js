@@ -1,4 +1,4 @@
-const database = require('../database/mongoose')
+const db = require('../repositories/mongoose/index')
 const {validateAuthToken} = require('../utils/authtoken')
 require('dotenv').config()
 // request -> authentication -> autorization -> route controller -> ...
@@ -21,7 +21,7 @@ const authenticate = async (req, res, next)=>{
     }
 
     console.log("uuid :",uuid)
-    const user = await database.user.FindByUuid(uuid)
+    const user = await db.userRepo.FindByUuid(uuid)
     //console.log("User :",user)
 
     if(user){
@@ -60,20 +60,21 @@ function authorize (requiredRoles){
 
         if(path[1] === 'club' && req.params.clubname){
             if(req.user){ 
-                let result = await database.club.checkMemberShip(req.params.clubname, req.user.uuid)
+                let result = await db.scienceClubRepo.checkMemberShip(req.params.clubname, req.user.uuid)
                 req.permissions = {...req.permissions, ...result}
             }
         }
         if(path[1] === 'p' && req.params.projectId){
             if(req.user){ 
-                let project = await database.project.findByUuid(req.params.projectId)
-                procejt = project.toObject()
-                if(project.owner === req.user.uuid){
-                    req.permissions.project_owner = true;
-                }
+                let project = await db.projectRepo.findByUuid(req.params.projectId)
+                if(project){
+                    if(project.owner === req.user.uuid){
+                        req.permissions.project_owner = true;
+                    }
 
-                if(project.participants.some(participant =>{ return participant.uuid === req.user.uuid })){ 
-                    req.permissions.project_participant = true
+                    if(project.participants.some(participant =>{ return participant.uuid === req.user.uuid })){ 
+                        req.permissions.project_participant = true
+                    }
                 }
             }
         }

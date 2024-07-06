@@ -8,7 +8,7 @@
 
 ### Set up 
 ``` bash
-git https://github.com/akai-org/ClubHub-Backend.git
+git clone https://github.com/akai-org/ClubHub-Backend.git
 cd ./ClubHub-backend/backend
 npm install  
 ```
@@ -18,6 +18,7 @@ example .env
 ```
 PORT = 3000
 JWT_SECRET = some_random_string
+NODE_ENV = development
 ```
 |variable| description| type|
 |------|---------------|---|

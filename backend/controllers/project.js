@@ -42,7 +42,7 @@ const getOneProject = async(req, res, next) =>{
     const { projectId } = req.params
     try {
         let project = await projectService.getOneProjectData(projectId)
-        res.status(200).json({success :true, project})
+        res.status(200).json({project})
     }catch(error){
         return next(error)
     }

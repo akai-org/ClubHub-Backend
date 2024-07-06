@@ -1,7 +1,7 @@
-const db = require('../database/mongoose')
+const db = require('../repositories/mongoose/index');
 
 const create = async (clubData)=>{
-        await db.club.create(clubData)
+        await db.scienceClubRepo.create(clubData)
         return {success : true, duplicate : false, message: "club created succesfuly", error : false}
 }   
 
@@ -11,7 +11,7 @@ const join = async (userId, clubName) =>{
         mesasge : '', 
         error : false}
 
-    const club = await db.club.FindByName(clubName)
+    const club = await db.scienceClubRepo.FindByName(clubName)
 
     if(!club){ 
         result.mesasge = `Club : ${clubName} does not exist`;
@@ -19,7 +19,7 @@ const join = async (userId, clubName) =>{
     }
 
     if(club.isopen){
-        await db.club.AddMember(userId)
+        await db.scienceClubRepo.AddMember(userId)
         result.success = true;
         result.clubFound = true;
         result.message = `Club is free to join, user joined Club : ${clubName}`; 
@@ -33,7 +33,7 @@ const join = async (userId, clubName) =>{
         return result
     }
 
-    await db.club.AddJoinRequest(clubName, userId)
+    await db.scienceClubRepo.AddJoinRequest(clubName, userId)
     result.success = true;
     result.clubFound = true;
     result.message = `Club is not free to join, user join request to Club : ${clubName} send`;
@@ -49,7 +49,7 @@ const resolveJoinRequest = async (requestId, decision, clubName)=>{
         message : "",
         error : false}
     
-    let remResult = await db.club.removeJoinRequest(clubName, requestId)
+    let remResult = await db.scienceClubRepo.removeJoinRequest(clubName, requestId)
 
     if(remResult.clubFound && !remResult.containsRequest){
         result.message = "Wrong request id, club does not have join request with given id"; 
@@ -57,7 +57,7 @@ const resolveJoinRequest = async (requestId, decision, clubName)=>{
     }
 
     if(decision === true){
-        await db.club.AddMember(clubName, requestId)
+        await db.scienceClubRepo.AddMember(clubName, requestId)
         result.success =  true;
         result.requestFound =  true;
         result.isMember=  true;
