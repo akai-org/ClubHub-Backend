@@ -46,7 +46,7 @@ class UserRepository extends BaseMongooseRepository {
     }
 
     async FindByUuid(id){
-        const user = await this.model.findOne({ uuid: id });
+        const user = await this.model.findOne({ uuid: id }) .select('-password -__v -_id');
         if(user){
             return user
         }

@@ -1,4 +1,4 @@
-
+const httpStatusCode = require('../utils/httpStatusCodes')
 const projectService = require('../services/project')
 
 const newProject = async (req, res, next) => {
@@ -9,7 +9,7 @@ const newProject = async (req, res, next) => {
 
     try{
         let createdProject = await projectService.startNew({name, description, owner})
-        return res.status(200).json({success: true, createdProject})
+        return res.status(httpStatusCode.OK).json({success: true, createdProject})
     }catch(error){
         return next(error)
     }
@@ -20,7 +20,7 @@ const joinProject = async(req, res, next)=>{
     let projectId = req.params.projectId
     try{    
         let result = await projectService.joinProject(userId, projectId)
-        res.status(200).json({success : true , services : {joinProject : result}})
+        res.status(httpStatusCode.OK).json({success : true})
     }catch(error){
         return next(error)   
     }
@@ -42,7 +42,7 @@ const getOneProject = async(req, res, next) =>{
     const { projectId } = req.params
     try {
         let project = await projectService.getOneProjectData(projectId)
-        res.status(200).json({project})
+        res.status(httpStatusCode.OK).json({project})
     }catch(error){
         return next(error)
     }

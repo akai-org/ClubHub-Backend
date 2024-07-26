@@ -1,4 +1,5 @@
 const db = require('../repositories/mongoose/index');
+const errors = require('../utils/appError')
 
 
 const startNew = async (projectData) =>{
@@ -36,7 +37,7 @@ const joinProject = async (userId, projectId) => {
 
     if(!project || !user){
         console.log("no user or project")
-        return result
+        throw new errors.NotFoundError("Project or User was not found")
     }
 
     if(project.joinRequests.includes(userId)){
@@ -63,6 +64,10 @@ const joinProject = async (userId, projectId) => {
 const getOneProjectData = async (projectId) =>{
 
     let project = await db.projectRepo.findByUuidWithUserData(projectId); 
+
+    if(!project){
+        throw new errors.NotFoundError(`Project with uuid : ${projectId} was not found`)
+    }
 
     return project
 }

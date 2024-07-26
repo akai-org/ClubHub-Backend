@@ -3,29 +3,13 @@ const {registerUser, loginUser, findProfileData} = require('../services/user')
 
 
 const register = async (req, res, next) => {
-    let result; 
+    let serviceResult; 
 
-    //service 
-    try{ result = await registerUser(req.body) }
+    try{ serviceResult = await registerUser(req.body) }
     catch(error) {
         return next(error)
     }
-
-    //managing response
-    if(result.error){ return res.status(500).json(result) }
-
-    if(result.succesfull){
-        res.status(200)
-    }else{
-        if(result.duplicate) {
-            res.status(409); 
-        }
-        else {
-            res.status(500); 
-            // probably wont ever happen cause of what registerUser service return but its edge case which best is to cover
-        }
-    }
-    res.json(result)
+    res.status(200).json(serviceResult)
 }
 
 const login = async (req, res, next)=>{
@@ -41,41 +25,21 @@ const login = async (req, res, next)=>{
     catch(error){
         return next(error) 
     }
-
-    // managing response
-    if(result.error){ res.status(500) }
-    else{
-        if(result.success){
-            res.status(200)
-        }else {
-            res.status(409)
-        }
-    }
-    res.json(result)
+    res.status(200).json(result)
 }
 
-const profile = async (req, res, next) =>{
+const accountData = async (req, res, next) =>{
 
+    console.log('account data'); 
     let result
-    if(!req.params.username){
-        res.status(400).json({succesfull : false , message : "Path does not contain username param", error : false})
-        return
-    }
-
     //service 
-    try{ result = await findProfileData(req.params.username) }
+    try{ result = await findProfileData(req.params.uuid) }
     catch(error){
         return next(error)
     }
 
-    //managing response 
-    if(result.success){
-        res.status(200)
-    }else{
-        res.status(404)
-    }
-    res.json(result)
+    res.status(200).json(result)
     
 }
 
-module.exports = {register ,login, profile}
+module.exports = {register ,login, accountData}
