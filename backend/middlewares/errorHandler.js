@@ -1,79 +1,63 @@
-const AppError = require('../utils/appError');
+const errors = require('../utils/appError');
 
 require('dotenv').config()
 
-const prodError = (err, appErr, res) =>{
-  console.log("prod Error")
-    if (appErr && appErr.isOperational) {
-      res.status(appErr.statusCode).json({
-        success : false, 
-        ...appErr, 
-      });
-    } else {
-      res.status(500).json({
-        success : false, 
-        status: "error",
-        errType : 'Internal',
-        message: "Internal server error",
+const prodError = (err, res) =>{
+    if (err) {
+      res.status(err.statusCode).json({
+        error : err.name,
+        message : err.description,
+        detail : err.detail,
       });
     }
 }
 
-const devError = (err, appErr, res) =>{
-  console.log("dev Error")
-  res.status(appErr.statusCode).json({
-      success : false, 
-      status: err.status,
-      ...appErr,
+const devError = (err, res) =>{
+  res.status(err.statusCode).json({
       //more info about error in development mode
-      message: err.message,
-      stack: err.stack,
-      error : err,
+      error : err.name,
+      message: err.description,
+      detail : err.detail,
+      stack: err instanceof errors.NotImplementedError ? err.stack : undefined,
+
+      //error : err,
   });
 }
 
-const castErrorHandler = (err) =>{
-    const message = `Invalid ${err.path}: ${err.value}.`
-    return new AppError(message, 400,{errType : "cast"})
-}
+const errorHandlerMiddleware = (err, req, res, next) =>{
+  /*
+  if(databaseErrorHandler.isTrusted(err)) // => err.name === "MongoServerError"
+    err = databaseErrorHandler.transformError(err)
+  */
+  
+    console.log(err)
 
-const duplicateErrorHandler = (err) =>{
-  const value = err.message.match(/(["'])(\\?.)*?\1/)[0];
-  const message = `field value:${value} aleady exist. please use another`;
-  return new AppError(message, 409, { errType : 'duplication', duplicatedFields : [value]})
-}
+  if((err.name === 'MongoError' || err.name === 'MongoServerError') && err.code === 11000){
+    err = new errors.AlreadyInUseError(`keys already in use: ${Object.keys(err.keyValue).join(', ')}`)
+  }
 
-const validationErrorHandler = (err) =>{
-    const errors = Object.values(err.errors).map((el) => el.message);
-    const message = `Invalid input data. ${errors.join(". ")}`;
-    return new AppError(message, 400, {errType : "validation"});
-}
+  if(!(err instanceof errors.BaseError)){
+    err = new errors.NotImplementedError(err)
+  }
 
-const logErrors = (err, req, res, next) =>{
-  console.error(err)
-  next(err)
-}
-
-const errorHandler = (err, req, res, next) =>{
-  let appErr = new AppError("Internal Error", 500); 
-  err.statusCode = err.statusCode || 500;
-  err.status = err.status || "error";
-
-  if (err.name === "CastError") appErr = castErrorHandler(err);
-  if (err. name === "ValidationError") appErr = validationErrorHandler (err); //error when not all fields are provided but are required
-  if (err.code === 11000 || err.code === 11001) appErr = duplicateErrorHandler(err); //error code is mongodb specific check mongodb documentation for more info
-  if (err instanceof AppError) appErr = err; 
-
-
+  let apiError = new errors.APIError(err)  
 
   if (process.env.NODE_ENV === "development") {
-    devError(err,appErr, res);
+    devError(apiError, res);
   }
   if (process.env.NODE_ENV === "production") {
-    prodError(err,appErr, res);
+    prodError(apiError, res);
   }
+
+  const logError = (error)=>{
+    if(error instanceof errors.NotImplementedError)
+      console.log(error)
+  }
+
+  logError(apiError)
+
 }
 
 
 
-module.exports = {errorHandler,logErrors}
+module.exports = {errorHandler: errorHandlerMiddleware}
