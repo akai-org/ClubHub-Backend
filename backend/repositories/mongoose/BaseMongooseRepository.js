@@ -5,7 +5,7 @@ class BaseMongooseRepository {
 
     constructor(collectionName, schema){
         this.schema = new mongoose.Schema(schema)
-        this.model = mongoose.model(collectionName, schema);
+        this.model = mongoose.model(collectionName, this.schema);
     }
 
     async insert(data){

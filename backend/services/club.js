@@ -1,11 +1,23 @@
 const db = require('../repositories/mongoose/index');
+const errors = require('../utils/appError')
 
 const create = async (clubData)=>{
-        await db.scienceClubRepo.create(clubData)
-        return {success : true, duplicate : false, message: "club created succesfuly", error : false}
+    await db.scienceClubRepo.create(clubData)
+    return {message: "club created succesfuly!"}
 }   
 
+const getClubProfileData = async (university, name, options) => {
+    let profile =  await db.scienceClubRepo.findOneByQuery({university, name})
+
+    console.log(`##############################:
+TO DO choosing to return events, meetings, projects
+##############################`);
+
+    return profile    
+}
+
 const join = async (userId, clubName) =>{
+    // @description 
     let result = {success : false , 
         clubFound: false, 
         mesasge : '', 
@@ -42,33 +54,41 @@ const join = async (userId, clubName) =>{
 
 }
 
-const resolveJoinRequest = async (requestId, decision, clubName)=>{
-    let result =  {success : false, 
-        requestFound : false, 
-        isMember: false, 
-        message : "",
-        error : false}
-    
-    let remResult = await db.scienceClubRepo.removeJoinRequest(clubName, requestId)
+const getClubJoinRequests = async({university, name}) => {
+    console.log({university, name})
+    const club = await db.scienceClubRepo.findOneByQuery({university, name}); 
+    console.log(club)
+    if(club){
+        return club.joinrequests;
+    }else{
+        let clubData = {university, name};
+        throw new errors.NotFoundError(`provided club data : {${ 'university : '+clubData.university + ", name : " + clubData.name}} was not found`)
+    }
 
-    if(remResult.clubFound && !remResult.containsRequest){
-        result.message = "Wrong request id, club does not have join request with given id"; 
-        return result; 
+}
+
+const resolveJoinRequest = async (requestId, decision, {university, name})=>{
+
+    let removeResult = await db.scienceClubRepo.removeJoinRequest({university, name}, requestId)
+
+    if(removeResult === undefined){
+        throw new errors.NotFoundError(`club : { university : ${university}, name : ${name}} was not found`)
+    }
+
+    if(removeResult === false){
+        throw new errors.NotFoundError(`join request for club : { university : ${university}, name : ${name}} was not found`)
     }
 
     if(decision === true){
-        await db.scienceClubRepo.AddMember(clubName, requestId)
-        result.success =  true;
-        result.requestFound =  true;
-        result.isMember=  true;
-        result.message =  `User : ${requestId} became member of ${clubName}`;
+        await db.scienceClubRepo.AddMember({university, name}, requestId)
+        return true
     }
-
-    result.success = true;
-    result.requestFound = true;
-    result.message = `User : ${requestId} did not became member of ${clubName}`;
-    return result 
+    return false 
 }
 
+const checkMembership = async (checkdClubQueryData, userUuid) =>{
+    const club = await db.scienceClubRepo.findOneByQuery(checkdClubQueryData)
+    //TO DO 
+}   
 
-module.exports = {create, join, resolveJoinRequest}
+module.exports = {create, join, resolveJoinRequest, getClubProfileData, getClubJoinRequests}

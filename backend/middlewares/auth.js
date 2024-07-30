@@ -1,5 +1,8 @@
 const db = require('../repositories/mongoose/index')
 const {validateAuthToken} = require('../utils/authtoken')
+
+const errors = require('../utils/appError')
+
 require('dotenv').config()
 // request -> authentication -> autorization -> route controller -> ...
 const authHeader = 'authorization';
@@ -20,9 +23,8 @@ const authenticate = async (req, res, next)=>{
         return next()
     }
 
-    console.log("uuid :",uuid)
+    console.log("User uuid :",uuid)
     const user = await db.userRepo.FindByUuid(uuid)
-    //console.log("User :",user)
 
     if(user){
         req.authenticated = true;
@@ -31,20 +33,15 @@ const authenticate = async (req, res, next)=>{
         req.authenticated = false;
         req.user = undefined
     }
-    console.log("authenticated :",req.authenticated);
+    console.log("Authenticated :",req.authenticated);
     next();
 }
 
 function createpPermisionObj(){
-    return{
-        viewer : true, 
+    return{ 
         member : false, 
         admin : false, 
-        owner : false, 
         user : false, 
-        project_owner : false, 
-        project_participant : false
- 
     }
 }
 
@@ -54,27 +51,16 @@ function authorize (requiredRoles){
 
         if(req.authenticated){
             req.permissions.user = true
+        }else{
+            return next(new errors.AuthorizationError('unauthenticated request'))
         }
 
-        const path = req.originalUrl.split('/')
-
-        if(path[1] === 'club' && req.params.clubname){
-            if(req.user){ 
+        if(req.params.clubname){
+            if(req.authenticated){ 
                 let result = await db.scienceClubRepo.checkMemberShip(req.params.clubname, req.user.uuid)
                 req.permissions = {...req.permissions, ...result}
-            }
-        }
-        if(path[1] === 'p' && req.params.projectId){
-            if(req.user){ 
-                let project = await db.projectRepo.findByUuid(req.params.projectId)
-                if(project){
-                    if(project.owner === req.user.uuid){
-                        req.permissions.project_owner = true;
-                    }
-
-                    if(project.participants.some(participant =>{ return participant.uuid === req.user.uuid })){ 
-                        req.permissions.project_participant = true
-                    }
+                if(req.permissions.admin === true){
+                    req.permissions.member = true; 
                 }
             }
         }
@@ -83,15 +69,13 @@ function authorize (requiredRoles){
         
         
         roles = requiredRoles.split(':')
-        //check if in required roles, user have one of those role 
         const isAuthorized = roles.some(role => req.permissions[role]);
         console.log("Authorized :", isAuthorized)
 
         if(isAuthorized){
             return next(); 
         }
-        res.status(401).json({succesfull: false, message : "Unauthorized"})
-        return
+        throw new errors.AuthorizationError('unathorized request')
     }
 }
 

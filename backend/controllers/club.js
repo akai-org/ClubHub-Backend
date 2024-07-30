@@ -34,13 +34,14 @@ const JoinRequest = async (req, res, next) => {
 const Create = async (req, res, next) => {
 
     const body = req.body
-    let data = {name : body.name, 
-        univeristy : body.university, 
+    let data = {
+        uuid : 'c' + Date.now(), 
+        name : body.name, 
+        university : body.university, 
         isopen : body.isopen, 
         description : body.description, 
         rules : body.rules,
-        admins : [req.user.uuid], 
-        members : [], 
+        members : [{userUuid : req.user.uuid , role : 'admin'}], 
         joinrequests : []
     }
     //service
@@ -48,60 +49,51 @@ const Create = async (req, res, next) => {
     try{
         result = await clubService.create(data); 
     }catch(error){
+        console.log(error)
         return next(error)
     }
 
-    
-    //managing response 
-    if(result.success){
-        res.status(200);
-    }else{
-        if(result.duplicate){
-            res.status(409);
-        }
-        if(result.error){
-            res.status(500);
-        }
-    } 
-    res.json(result); 
+    res.status(200).json(result); 
 }
 
 const getClubProfile = async (req, res, next) => {
-    //make a response based on req.permissions for viewer, member and admin
-    //return data about given science club
-    console.log("checking club profile")
-    return res.status(200).json({message:req.params.clubname});
+
+    const {university, clubname} = req.params
+
+    const {meets, events, projects} = req.query
+
+    let clubInfo;
+    try{ 
+        clubInfo = await clubService.getClubProfileData(university, clubname)
+    }catch(err){
+        return next(err)
+    }
+    return res.status(200).json({message:req.params.clubname, clubInfo});
 }
 
 const resolveJoinRequest = async (req, res, next) =>{
-    const {decision, requestId} = req.body
-    const clubName = req.params.clubname
+    const {uuid, accept} = req.body
+    console.log(req.params); 
     
     let result
     try {
-        result = await clubService.resolveJoinRequest(requestId, decision, clubName)
+        result = await clubService.resolveJoinRequest(uuid, accept, {university : req.params.university, name : req.params.clubname })
     }catch(error){
         return next(error)
     }
-    
 
-    if(result.success){
-        return res.status(200).json(result);
-    }
-
-    if(!result.requestFound){
-        return res.status(400).json(result);
-    }
-
-    if(result.error){
-        return res.status(500).json(result); 
-    }
-
+    res.status(200).json({uuid : uuid, message : `request ${uuid} was ${accept ? '' : 'not'} acceptd`})
 }
 
 const getJoinRequests = async (req, res, next) => {
-    //const result = await db.club.getJoinRequests(req.params.clubname)
-    res.status(200).json({to_do:true})
+    let params = req.params
+    let joinRequestList;
+    try {
+        joinRequestList = await clubService.getClubJoinRequests({university : params.university, name : params.clubname})
+    }catch(error){
+        return next(error)
+    }
+    res.status(200).json({joinRequests : joinRequestList})
 }
 
 module.exports = {

@@ -38,6 +38,8 @@ const accountData = async (req, res, next) =>{
         return next(error)
     }
 
+    result.authenticated = req.authenticated
+
     res.status(200).json(result)
     
 }

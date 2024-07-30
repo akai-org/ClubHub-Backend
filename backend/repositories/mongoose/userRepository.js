@@ -11,20 +11,19 @@ const userSchema = {
       type: String,
       required: true,
       unique: true,
+      deafult : "empty", 
     },
     firstname: {
       type: String,  
+      deafult : "empty", 
     },
     lastname: {
       type: String,
+      deafult : "empty", 
     },
     email: {
       type: String,
       required: true,
-      unique: true,
-    },
-    discrod: {
-      type: String,
       unique: true,
     },
     password: {
@@ -46,7 +45,7 @@ class UserRepository extends BaseMongooseRepository {
     }
 
     async FindByUuid(id){
-        const user = await this.model.findOne({ uuid: id }) .select('-password -__v -_id');
+        const user = await this.model.findOne({ uuid: id }).select('-password -__v -_id');
         if(user){
             return user
         }

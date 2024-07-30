@@ -3,20 +3,25 @@ const club = require('../controllers/club')
 const validateRequestBody = require('../middlewares/validateRequestBody')
 
 const {authorize} = require('../middlewares/auth')
-const clubRouter = express.Router();
+const clubRouter = express.Router({mergeParams: true});
 
-clubRouter.get('/create', authorize('user'), validateRequestBody("name:university:description"), club.Create);
-clubRouter.get('/:clubname', authorize('viewer:member:admin'), club.getClubProfile); //TO DO 
-clubRouter.post('/:clubname/join',authorize('user'), club.JoinRequest);
-clubRouter.get('/:clubname/getJoinRequests', authorize('admin'), club.getJoinRequests); // to do service
-clubRouter.post('/:clubname/resolveJoinRequest', authorize('viewer'),validateRequestBody("requestId:decision"), club.resolveJoinRequest)
-clubRouter.post('/:clubname/leave',authorize('user'), (req, res) => {
-    res.status(200).json({message:`leave ${req.params.name}`});
-});
+clubRouter.get('/', authorize('user'), club.getClubProfile); //TO DO 
 
-clubRouter.post('/invite/:inviteId', (req, res) => {
-    //check in database club invite collection if invite with provided id exists check if name is also correct to given invite then add user to club based on authorization token and userID
-    res.status(200).json({message:`invite`, inviteId : req.params.inviteId});
+clubRouter.delete('/', authorize('admin'), (req, res)=>{
+    res.status(200).json({message : "to do delete club"})
+}); //TO DO 
+
+clubRouter.put('/edit', authorize('admin'), (req, res)=>{
+    res.status(200).json({message : "to do edit club"})
+}); //TO DO 
+
+clubRouter.post('/join',authorize('user'), club.JoinRequest);
+
+clubRouter.get('/join-requests', authorize('admin'), club.getJoinRequests);
+clubRouter.post('/join-requests', authorize('admin'), validateRequestBody("uuid:accept"), club.resolveJoinRequest);
+
+clubRouter.post('/leave',authorize('user'), (req, res) => {
+    res.status(200).json({message:` to do leave club ${req.params.name}`});
 });
 
 module.exports = clubRouter;

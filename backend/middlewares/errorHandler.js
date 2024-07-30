@@ -16,7 +16,7 @@ const devError = (err, res) =>{
   res.status(err.statusCode).json({
       //more info about error in development mode
       error : err.name,
-      message: err.description,
+      message: err.description || err.message,
       detail : err.detail,
       stack: err instanceof errors.NotImplementedError ? err.stack : undefined,
 
@@ -29,11 +29,14 @@ const errorHandlerMiddleware = (err, req, res, next) =>{
   if(databaseErrorHandler.isTrusted(err)) // => err.name === "MongoServerError"
     err = databaseErrorHandler.transformError(err)
   */
-  
-    console.log(err)
 
   if((err.name === 'MongoError' || err.name === 'MongoServerError') && err.code === 11000){
     err = new errors.AlreadyInUseError(`keys already in use: ${Object.keys(err.keyValue).join(', ')}`)
+  }
+
+  if(err.name === 'MongooseError'){
+    console.log("Mongoose Error")
+    err = new Error('Mongoose Error')
   }
 
   if(!(err instanceof errors.BaseError)){
@@ -49,13 +52,8 @@ const errorHandlerMiddleware = (err, req, res, next) =>{
     prodError(apiError, res);
   }
 
-  const logError = (error)=>{
-    if(error instanceof errors.NotImplementedError)
-      console.log(error)
-  }
-
-  logError(apiError)
-
+  if(err instanceof errors.NotImplementedError)
+    console.log(err)
 }
 
 

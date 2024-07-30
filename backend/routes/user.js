@@ -7,7 +7,7 @@ const validateRequestBody = require('../middlewares/validateRequestBody')
 const {authorize} = require('../middlewares/auth')
 
 userRouter.post('/register', validateRequestBody("email:username:password"), register);
-userRouter.get('/login', authorize('viewer:user'), validateRequestBody("email:password"), login);
+userRouter.get('/login', validateRequestBody("email:password"), login);
 
 // /account/:uuid
 accountRouter.get('/', accountData)
@@ -22,6 +22,10 @@ accountRouter.get('/meet', (req, res)=>{
 
 accountRouter.get('/project', (req, res)=>{
     res.status(200).json({message : 'to do account projects'})
+})
+
+accountRouter.get('/club', (req, res)=>{
+    res.status(200).json({message : 'to do account clubs'})
 })
 
 accountRouter.put('/edit', (req, res)=>{

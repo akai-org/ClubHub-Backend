@@ -1,6 +1,13 @@
 const BaseMongooseRepository = require('./BaseMongooseRepository')
 
 const scienceClubSchema = {
+
+    uuid : {
+        type : String,
+        required :  true,
+        unique : true, 
+        index : true,
+    },
     name: {
         type : String, 
         required : true, 
@@ -10,8 +17,11 @@ const scienceClubSchema = {
         type : Boolean, 
         deafult : false,
     },
-    admins: [{ type: String, ref: 'users_accounts' }],
-    members: [{ type:String, ref: 'users_accounts' }],
+    members: [ {
+        userUuid : { type:String, ref: 'users_accounts' }, 
+        role : {type : String}, 
+        _id : false
+    }],
     university: {
         type : String, 
         default : ""
@@ -37,8 +47,16 @@ class ScienceClubRepository extends BaseMongooseRepository {
         await club.save()
     }
 
+    async findOneByQuery(query){
+        const club = await this.model.findOne(query).select('-__v -_id')
+        if(club){
+            return club
+        }
+        return undefined 
+    }
+
     async FindByName (clubName) {
-        const club = await this.model.findOne({ name: clubName });
+        const club = await this.model.find({ name: clubName }).select('-__v -_id');
         if(club){
             return club
         }
@@ -46,87 +64,67 @@ class ScienceClubRepository extends BaseMongooseRepository {
     }
 
     async AddJoinRequest (clubName, request){
-        
-        try {
-            // Find the club by its ID
-            const club = await this.model.findOne({ name: clubName });
-    
-            if (!club) {
-                return { success: false, message: 'Club not found' };
-            }
-    
-            // Check if the user ID is already in the array
-            if (club.joinrequests.includes(request)) {
+        // Find the club by its ID
+        const club = await this.model.findOne({ name: clubName });
 
-                return { success: false, message: 'User already send join request' };
-            }
-            club.joinrequests.push(request);
-            await club.save();
-    
-            return { success: true, message: 'Request Send', club };
-        } catch (error) {
-            console.error('Error adding user to club:', error);
-            return { success: false, error : true, message: 'Error adding user to club', error };
+        if (!club) {
+            return { success: false, message: 'Club not found' };
         }
+
+        // Check if the user ID is already in the array
+        if (club.joinrequests.includes(request)) {
+
+            return { success: false, message: 'User already send join request' };
+        }
+        club.joinrequests.push(request);
+        await club.save();
+
+        return { success: true, message: 'Request Send', club };
     }
 
-    async removeJoinRequest (clubName, request){
+    async removeJoinRequest ({university, name}, request){
    
-        let club = await this.model.findOne({ name: clubName })
+        let club = await this.model.findOne({ university, name })
 
         if(!club){
-            return {success : false , clubFound : false}
+            return undefined
         }
 
         if(!club.joinrequests.includes(request)){
-            return {success : false,clubFound : true, containsRequest : false}
+            return false 
         }
 
         club.joinrequests = club.joinrequests.filter(element => element !== request);
         await club.save()
 
-        return { success: true, clubFound : true, containsRequest : true};
-
+        return club
     } 
 
-    async AddMember (clubname, userId){
-        try {
-
-            const club = await this.model.findOne({ name: clubname });
-            console.log(club)
-            if(!club.members.includes(userId))
-            {
-                club.members.push(userId)
-                await club.save()
-                return { success: true, message: 'Member Added to Club', club };
-            }
-            return { success: false, message: 'Member already is member of Club', club };
-        } catch (error) {
-            console.error('Error adding user to club:', error);
-            return { success: false, error : true, message: 'Error adding user to club', error };
+    async AddMember ({university, name}, userId){
+        const club = await this.model.findOne({university, name});
+        if(!club){ 
+            return undefined
         }
+        if(!club.members.includes(userId))
+        {
+            let memberObj ={userUuid : userId, role : 'member'}; 
+            club.members.push(memberObj)
+            await club.save()
+            return memberObj
+        }
+        return false 
     }
 
     async checkMemberShip(clubname, userId){
         let result = {admin :false, member : false}
-        try{
-            const club = await this.model.findOne({name : clubname})
-            console.log(club.members)
-            if(club){
-                if(club.admins.includes(userId)){
-                    result.admin = true; 
-                }
-
-                if(club.members.includes(userId)){
-                    result.member = true
-                }
-                
+        const club = await this.model.findOne({name : clubname})
+        if(club){
+            const exists = club.members.find(obj => obj['userUuid'] === userId);
+            if(exists){
+                result[exists.role] = true
             }
-            return result
-        }catch(error){
-            console.error("error while checking membership", error)
-            return {admin :false, member : false}
         }
+        return result
     }
 
     async getJoinRequests(clubname){
