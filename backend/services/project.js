@@ -1,13 +1,14 @@
 const db = require('../repositories/mongoose/index');
-const errors = require('../utils/appError')
+const errors = require('../utils/error/appError')
 
 
-const startNew = async (projectData) =>{
-    projectData.uuid = Date.now(); //need to change to create some proper uuid
+const startNew = async (projectData)=>{
+
+    projectData.uuid = 'p' + Date.now();
 
     let project = await db.projectRepo.insert(projectData)
     
-    const { _id, participants,joinRequests , __v ,...resultproject} = project
+    const {joinRequests,...resultproject} = project
     return resultproject
 }
 

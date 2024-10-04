@@ -30,18 +30,15 @@ const login = async (req, res, next)=>{
 
 const accountData = async (req, res, next) =>{
 
-    console.log('account data'); 
     let result
-    //service 
-    try{ result = await findProfileData(req.params.uuid) }
+
+    try{ 
+        result = await findProfileData(req.params.uuid) 
+    }
     catch(error){
         return next(error)
     }
-
-    result.authenticated = req.authenticated
-
     res.status(200).json(result)
-    
 }
 
 module.exports = {register ,login, accountData}

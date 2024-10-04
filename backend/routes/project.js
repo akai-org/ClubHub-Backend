@@ -2,12 +2,15 @@ const express = require('express');
 const projectRouter = express.Router();
 
 const {newProject, joinProject, editProjectData, getProjects, getOneProject} = require('../controllers/project')
-const validateRequestBody = require('../middlewares/validateRequestBody')
+const validateRequest = require('../middlewares/validateRequestBody')
+
 const {authorize} = require('../middlewares/auth')
 
 //POST
-projectRouter.post('/new', authorize('user'), validateRequestBody('name'), newProject)
+projectRouter.post('/new',validateRequest(), authorize('user'), newProject)
+
 projectRouter.post('/:projectId/join', authorize('user'), joinProject)
+
 projectRouter.post('/:projectId/edit', authorize('project_owner'), editProjectData) // TO DO 
 
 //GET

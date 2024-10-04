@@ -1,37 +1,29 @@
 const express = require('express');
-const userRouter = express.Router();
-const accountRouter = express.Router({mergeParams: true}); 
 
 const {register, login , accountData} = require('../controllers/user')
-const validateRequestBody = require('../middlewares/validateRequestBody')
-const {authorize} = require('../middlewares/auth')
+const validateRequest = require('../middlewares/validateRequestBody')
+const {loginValidSchema, registerValidSchema} = require('../utils/validationJoiSchema')
 
-userRouter.post('/register', validateRequestBody("email:username:password"), register);
-userRouter.get('/login', validateRequestBody("email:password"), login);
 
 // /account/:uuid
+const accountRouter = express.Router({mergeParams: true}); 
+
+// account Router: /account/:uuid
 accountRouter.get('/', accountData)
 
-accountRouter.get('/event', (req, res)=>{
-    res.status(200).json({message : 'to do account events'})
-})
+// /
+const userRouter = express.Router();
 
-accountRouter.get('/meet', (req, res)=>{
-    res.status(200).json({message : 'to do account meetings'})
-})
+// user Router: /
+userRouter.post('/register', 
+    validateRequest(registerValidSchema), 
+    register);
 
-accountRouter.get('/project', (req, res)=>{
-    res.status(200).json({message : 'to do account projects'})
-})
+userRouter.post('/login', 
+    validateRequest(loginValidSchema), 
+    login);
 
-accountRouter.get('/club', (req, res)=>{
-    res.status(200).json({message : 'to do account clubs'})
-})
-
-accountRouter.put('/edit', (req, res)=>{
-
-})
-
-userRouter.use('/account/:uuid', accountRouter)
+userRouter.use('/account/:uuid', 
+    accountRouter)
 
 module.exports = userRouter;

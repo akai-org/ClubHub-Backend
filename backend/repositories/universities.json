@@ -1,0 +1,20 @@
+[ 
+    {
+        "name" : "Poznan University of Technology",
+        "path_param_name" : "PoznanUniversityOfTechnology",
+        "uuid" : "uni1", 
+        "country" : "Poland",
+        "city" : "Poznan",
+        "abbreviation" : "PUT", 
+        "website_adress" : "https://put.poznan.pl"
+    },
+    {
+        "name" : "Adam Mickiewicz University",
+        "path_param_name" : "AdamMickiewiczUniversity",
+        "uuid" : "uni2", 
+        "country" : "Poland",
+        "city" : "Poznan",
+        "abbreviation" : "UAM", 
+        "website_adress" : "https://amu.edu.pl"
+    }
+]

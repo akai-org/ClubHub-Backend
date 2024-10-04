@@ -15,10 +15,10 @@ const scienceClubSchema = {
     },
     isopen: {
         type : Boolean, 
-        deafult : false,
+        default : false,
     },
     members: [ {
-        userUuid : { type:String, ref: 'users_accounts' }, 
+        uuid : { type:String, ref: 'users_accounts' }, 
         role : {type : String}, 
         _id : false
     }],
@@ -28,11 +28,11 @@ const scienceClubSchema = {
     },
     description : {
         type: String, 
-        deafult : ""
+        default : ""
     },
     rules : {
         type : String, 
-        deafult : ""
+        default : ""
     },
     joinrequests : [{ type: String, ref: 'users_accounts' }]
 }
@@ -42,9 +42,10 @@ class ScienceClubRepository extends BaseMongooseRepository {
         super('science_clubs', scienceClubSchema)
     }
 
-    async create (clubData){
+    async insert (clubData){
         const club = this.model(clubData)
         await club.save()
+        return club.toObject(); 
     }
 
     async findOneByQuery(query){
@@ -107,7 +108,7 @@ class ScienceClubRepository extends BaseMongooseRepository {
         }
         if(!club.members.includes(userId))
         {
-            let memberObj ={userUuid : userId, role : 'member'}; 
+            let memberObj ={uuid : userId, role : 'member'}; 
             club.members.push(memberObj)
             await club.save()
             return memberObj
@@ -115,11 +116,27 @@ class ScienceClubRepository extends BaseMongooseRepository {
         return false 
     }
 
+    async deleteMember ({university, name}, userId){
+        const club = await this.model.findOne({university, name});
+
+        if(!club){ 
+            return undefined
+        }
+
+        if(!club.members.includes(userId))
+        {
+            club.members = club.members.filter(member => member.uuid !== userId);
+            await club.save()
+            return club.toObject()
+        }
+        return false
+    }
+
     async checkMemberShip(clubname, userId){
         let result = {admin :false, member : false}
         const club = await this.model.findOne({name : clubname})
         if(club){
-            const exists = club.members.find(obj => obj['userUuid'] === userId);
+            const exists = club.members.find(obj => obj['uuid'] === userId);
             if(exists){
                 result[exists.role] = true
             }

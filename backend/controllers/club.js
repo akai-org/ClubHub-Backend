@@ -1,34 +1,17 @@
 const clubService = require('../services/club')
 
-const JoinRequest = async (req, res, next) => {
-    let clubName = req.params.clubname
-    let userUuid = req.user.uuid
+const sendJoinRequest = async (req, res, next) => {
+    let params = req.params
+    let user = req.user
 
-    if(req.permissions.member || req.permissions.admin){
-        return res.status(200).json({succes: true, message : `Already member of ${clubName}`})
-    }
-
-    //service
     let result
     try{
-        result = await clubService.join(userUuid, clubName)
+        result = await clubService.join(user.uuid, {name : params.clubname, university : params.university})
     }catch(error){
         return next(error)
     }
     
-    
-    //managing response
-    if(result.success){
-        return res.status(200).json(result); 
-    }
-
-    if(!result.clubFound){
-        return res.status(404).json(result); 
-    }
-
-    if(result.error){
-        return res.status(500).json(result)
-    }
+    res.status(200).json(result); 
 }
 
 const Create = async (req, res, next) => {
@@ -37,19 +20,18 @@ const Create = async (req, res, next) => {
     let data = {
         uuid : 'c' + Date.now(), 
         name : body.name, 
-        university : body.university, 
+        university : req.params.university, // VALIDATE IS UNIVERSITY IS IN DATABASE????????
         isopen : body.isopen, 
         description : body.description, 
         rules : body.rules,
-        members : [{userUuid : req.user.uuid , role : 'admin'}], 
+        members : [{uuid : req.user.uuid , role : 'admin'}], 
         joinrequests : []
     }
-    //service
+
     let result;
     try{
         result = await clubService.create(data); 
     }catch(error){
-        console.log(error)
         return next(error)
     }
 
@@ -59,8 +41,6 @@ const Create = async (req, res, next) => {
 const getClubProfile = async (req, res, next) => {
 
     const {university, clubname} = req.params
-
-    const {meets, events, projects} = req.query
 
     let clubInfo;
     try{ 
@@ -73,16 +53,14 @@ const getClubProfile = async (req, res, next) => {
 
 const resolveJoinRequest = async (req, res, next) =>{
     const {uuid, accept} = req.body
-    console.log(req.params); 
     
-    let result
     try {
-        result = await clubService.resolveJoinRequest(uuid, accept, {university : req.params.university, name : req.params.clubname })
+        await clubService.resolveJoinRequest(uuid, accept, {university : req.params.university, name : req.params.clubname })
     }catch(error){
         return next(error)
     }
 
-    res.status(200).json({uuid : uuid, message : `request ${uuid} was ${accept ? '' : 'not'} acceptd`})
+    res.status(200).json({uuid : uuid, message : `request ${uuid} was ${accept ? '' : 'not '}accepted`})
 }
 
 const getJoinRequests = async (req, res, next) => {
@@ -97,5 +75,5 @@ const getJoinRequests = async (req, res, next) => {
 }
 
 module.exports = {
-    JoinRequest, Create,getClubProfile, resolveJoinRequest, getJoinRequests
+    sendJoinRequest, Create, getClubProfile, resolveJoinRequest, getJoinRequests
 }

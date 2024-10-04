@@ -18,11 +18,7 @@ const projectSchema = {
     visible : {
         type : Boolean, 
         default : true, 
-    }, 
-    joinFree :  {
-        type : Boolean, 
-        default : false, 
-    }, 
+    },  
     description : {
         type: String, 
         default : "empty",
@@ -33,16 +29,19 @@ const projectSchema = {
         required : true, 
         ref: 'user_accounts'
     },
-    participants : [ 
-        { _id :false,
+    participants : [ {
+        _id :false,
         uuid: {
             type: String, 
             ref: 'user_accounts'
         }, 
         responsibilities : [{ type: String }]
-        }
-    ], 
-    externalSources :  [{ type: String }],
+    }], 
+    externalSources :  [ {
+        name : { type: String }, 
+        source : {type : String}
+    }],
+    
     involvedScienceClubs : [{ type: String, ref: 'science_clubs' }],
     technologies : [{ type: String }], 
     tags : [{ type: String }],
@@ -60,9 +59,11 @@ class ProjectRepository extends BaseMongooseRepository{
     }
 
     async insert(data){
-        const project = new this.model(data)
-        project.save()
-        return project.toObject()
+        let project = new this.model(data)
+        await project.save()
+        project = project.toObject(); 
+        const { _id, __v ,...resultproject} = project
+        return resultproject; 
     }
 
     async findByUuid (uuid) {

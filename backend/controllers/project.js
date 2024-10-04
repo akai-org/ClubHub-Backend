@@ -2,17 +2,20 @@ const httpStatusCode = require('../utils/httpStatusCodes')
 const projectService = require('../services/project')
 
 const newProject = async (req, res, next) => {
-    let {name, description, owner} = req.body
-    if(!owner){
-        owner = req.user.uuid
-    }
+    let body = req.body, createdProject;
 
-    try{
-        let createdProject = await projectService.startNew({name, description, owner})
-        return res.status(httpStatusCode.OK).json({success: true, createdProject})
+    body.owner = req.user.uuid // owner is user that creating a project he is already auth as member of club
+    body.university = req.params.university; // passed from a path if many clubs are working on proj invite them
+    body.club = req.params.clubname
+    
+    try{       
+
+        createdProject = await projectService.startNew(body) 
     }catch(error){
         return next(error)
     }
+
+    res.status(httpStatusCode.OK).json(createdProject)
 }
 
 const joinProject = async(req, res, next)=>{

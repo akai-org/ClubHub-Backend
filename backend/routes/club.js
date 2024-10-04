@@ -1,27 +1,37 @@
 const express = require('express');
-const club = require('../controllers/club')
-const validateRequestBody = require('../middlewares/validateRequestBody')
 
+const clubRouter = express.Router({mergeParams: true}); 
+
+const clubControllers = require('../controllers/club')
+const validateRequest = require('../middlewares/validateRequestBody')
+const {newProject} = require('../controllers/project')
 const {authorize} = require('../middlewares/auth')
-const clubRouter = express.Router({mergeParams: true});
+const {createProjectValidSchema, joinRequestAcceptValidSchema} = require('../utils/validationJoiSchema')
 
-clubRouter.get('/', authorize('user'), club.getClubProfile); //TO DO 
+/*Router used by route:
+/:university/:clubname
+*/
+//GET
+clubRouter.get('/', 
+    authorize('user'), 
+    clubControllers.getClubProfile);
 
-clubRouter.delete('/', authorize('admin'), (req, res)=>{
-    res.status(200).json({message : "to do delete club"})
-}); //TO DO 
+clubRouter.get('/join-requests', 
+    authorize('admin'), 
+    clubControllers.getJoinRequests);
 
-clubRouter.put('/edit', authorize('admin'), (req, res)=>{
-    res.status(200).json({message : "to do edit club"})
-}); //TO DO 
+//POST
+clubRouter.post('/join',
+    authorize('user'), 
+    clubControllers.sendJoinRequest); 
 
-clubRouter.post('/join',authorize('user'), club.JoinRequest);
+clubRouter.post('/join-requests', 
+    authorize('admin'), 
+    validateRequest(joinRequestAcceptValidSchema), 
+    clubControllers.resolveJoinRequest);
 
-clubRouter.get('/join-requests', authorize('admin'), club.getJoinRequests);
-clubRouter.post('/join-requests', authorize('admin'), validateRequestBody("uuid:accept"), club.resolveJoinRequest);
-
-clubRouter.post('/leave',authorize('user'), (req, res) => {
-    res.status(200).json({message:` to do leave club ${req.params.name}`});
-});
+clubRouter.post('/project',  
+    validateRequest(createProjectValidSchema), //authorize(member) /* await checkMembership(req.user.uuid, {university : params.university, clubname : params.clubname })*/ */
+    newProject)
 
 module.exports = clubRouter;

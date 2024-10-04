@@ -1,7 +1,7 @@
 const {getCurrTime} = require('./time')
 
 function logRequestCall(req, res, next){
-    console.log(getCurrTime() , 'Request on path: ', req.path);
+    console.log('['+ getCurrTime()+ ']' , 'Request on path: ', req.path);
     const startHrTime = process.hrtime();
 
     res.on('finish', () => {

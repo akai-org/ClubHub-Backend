@@ -1,4 +1,4 @@
-const AppError = require('../../utils/appError')
+const AppError = require('../../utils/error/appError')
 const mongoose = require('mongoose')
 
 class BaseMongooseRepository {

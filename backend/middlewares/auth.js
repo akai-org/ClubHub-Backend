@@ -1,7 +1,7 @@
 const db = require('../repositories/mongoose/index')
 const {validateAuthToken} = require('../utils/authtoken')
 
-const errors = require('../utils/appError')
+const errors = require('../utils/error/appError')
 
 require('dotenv').config()
 // request -> authentication -> autorization -> route controller -> ...
@@ -13,6 +13,7 @@ const authenticate = async (req, res, next)=>{
     if(!authToken){
         console.log("Authenticated :", false)
         req.authenticated = false; 
+        console.log(next)
         return next();  
     }
 
