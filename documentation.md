@@ -1,3 +1,7 @@
+# API Documentation 
+#### Important!!! 
+API is still under development and for now documentation might not be fully updated with current stage of API development. Sorry for any inconvenience. 
+
 ## Directories
 - /config 
 stores configuration files. For Example database configuration file, configuration variables .json file etc.
