@@ -1,18 +1,18 @@
 const app = require("./app");
-const {getCurrTime} = require('./utils/time');
 const database = require('./repositories/mongoose/index');
-const mongoose = require("mongoose");
-require('dotenv').config()
+const config = require('config')
+require('./utils/logger/instance')
 
-const PORT = process.env.PORT || 3000;
+const PORT = config.get('app.port') || 3000;
 
 const startServer = async () => {
     await database.connect();
     app.listen(PORT, () => {
-
-        console.log('['+getCurrTime()+']', 'App running on port', PORT)
-    })
+        logger.verbose(`App is running in ${process.env.NODE_ENV.toUpperCase()} enviroment`, { ...config,  node_enviroment : process.env.NODE_ENV })
+    }).on('error', (err) => {
+        logger.fatal(err.message); 
+        process.exit(1); 
+     });
 }
 
 startServer()
-

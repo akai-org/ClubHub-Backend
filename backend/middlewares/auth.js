@@ -1,8 +1,7 @@
 const db = require('../repositories/mongoose/index')
 const {validateAuthToken} = require('../utils/authtoken')
 
-const errors = require('../utils/error/appError')
-
+const errors = require('../utils/error/appError');
 require('dotenv').config()
 // request -> authentication -> autorization -> route controller -> ...
 const authHeader = 'authorization';
@@ -11,20 +10,19 @@ const authHeader = 'authorization';
 const authenticate = async (req, res, next)=>{
     let authToken = req.headers[authHeader]; 
     if(!authToken){
-        console.log("Authenticated :", false)
+        logger.debug("Authenticated :", false)
         req.authenticated = false; 
-        console.log(next)
         return next();  
     }
 
     const uuid = await validateAuthToken(authToken); 
     if(!uuid){
         req.auth = {status : "Invalid authorization token",}
-        console.log(req.auth.status)
+        logger.debug(req.auth.status)
         return next()
     }
 
-    console.log("User uuid :",uuid)
+    logger.debug("User uuid :",uuid)
     const user = await db.userRepo.FindByUuid(uuid)
 
     if(user){
@@ -34,7 +32,7 @@ const authenticate = async (req, res, next)=>{
         req.authenticated = false;
         req.user = undefined
     }
-    console.log("Authenticated :",req.authenticated);
+    logger.debug("Authenticated :",req.authenticated);
     next();
 }
 
@@ -66,12 +64,12 @@ function authorize (requiredRoles){
             }
         }
 
-        console.log("permisions :", req.permissions)
+        logger.debug("permisions :", req.permissions)
         
         
         roles = requiredRoles.split(':')
         const isAuthorized = roles.some(role => req.permissions[role]);
-        console.log("Authorized :", isAuthorized)
+        logger.debug("Authorized :", isAuthorized)
 
         if(isAuthorized){
             return next(); 

@@ -9,12 +9,9 @@
         "saltRounds" : 10
     },
     "logger" : {
-        "level" : "debug",
-        "mongodb" : {
-            "URI" : "mongodb://127.0.0.1:27017/SciClubHub", 
-            "collection" : "logs"
-        },
-        "transports" : ["console"],
+        "level" : "verbose",
+        "transports" : ["mongodb"],
+        
         "options" : {
             "prettyPrint" : false 
         }

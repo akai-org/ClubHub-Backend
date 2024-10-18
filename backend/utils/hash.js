@@ -1,6 +1,6 @@
 const bcrypt = require('bcrypt');
 const config = require('config')
-const bcryptSaltRounds = config.get('bcryptSaltRounds')
+const bcryptSaltRounds = config.get('bcrypt.saltRounds')
 
 hash = async (text) =>{
 
