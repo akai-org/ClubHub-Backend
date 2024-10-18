@@ -64,9 +64,9 @@ class ScienceClubRepository extends BaseMongooseRepository {
         return false
     }
 
-    async AddJoinRequest (clubName, request){
+    async AddJoinRequest (name, request){
         // Find the club by its ID
-        const club = await this.model.findOne({ name: clubName });
+        const club = await this.model.findOne({ name });
 
         if (!club) {
             return { success: false, message: 'Club not found' };

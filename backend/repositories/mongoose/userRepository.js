@@ -41,7 +41,7 @@ class UserRepository extends BaseMongooseRepository {
   async insert(userdata) {
     const user = this.model(userdata)
     await user.save()
-    return { succesfull: true, duplicate: false, message: "User saved in database", error: false }
+    return user.toObject()
   }
 
   async FindByUuid(id) {

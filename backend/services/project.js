@@ -37,7 +37,6 @@ const joinProject = async (userId, projectId) => {
     result.correct.userId = user ? true : false;  
 
     if(!project || !user){
-        console.log("no user or project")
         throw new errors.NotFoundError("Project or User was not found")
     }
 

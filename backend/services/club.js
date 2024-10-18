@@ -14,12 +14,12 @@ const getClubProfileData = async (university, name) => {
     return profile    
 }
 
-const join = async (userId, clubName, university) =>{
+const join = async (userId, {name, university}) =>{
 
-    const club = await db.scienceClubRepo.findOneByQuery({name : clubName, university : university})
+    const club = await db.scienceClubRepo.findOneByQuery({name, university})
 
     if(!club){ 
-        throw new errors.NotFoundError(`Club : ${clubName} does not exist`); 
+        throw new errors.NotFoundError(`Club : ${name} does not exist`); 
     }
 
     if(club.members.some(member => {member.uuid === userId})){
@@ -27,16 +27,16 @@ const join = async (userId, clubName, university) =>{
     }
 
     if(club.isopen){
-        await db.scienceClubRepo.AddMember({name : clubName, university : university }, userId)
-        return {isopen: true, member : userId}
+        await db.scienceClubRepo.AddMember({name, university }, userId)
+        return {message: "club is open user is a member", member : userId}
     }
 
     if(club.joinrequests.includes(userId)){
         throw new errors.AlreadyExistsError(`User : ${userId} already send join request to club : { univeristy : ${university}, name : ${clubName}}`);
     }
 
-    await db.scienceClubRepo.AddJoinRequest(clubName, userId)
-    return {isopen : false , joinRequest : userId} 
+    await db.scienceClubRepo.AddJoinRequest(name, userId)
+    return { message : "club is not open join request send",joinRequest : userId} 
 }
 
 const getClubJoinRequests = async({university, name}) => {

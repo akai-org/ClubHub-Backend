@@ -15,13 +15,13 @@ const register = async (req, res, next) => {
 const login = async (req, res, next)=>{
 
     if(req.authenticated){
-        res.status(200).json({succesfull : true, message : "User Authenticated by auth token", error : false}); 
+        res.status(200).json({message : "User Authenticated by auth token"}); 
         return
     }
     let result;
 
     //service 
-    try{ result= await loginUser(req.body) }
+    try{ result = await loginUser(req.body) }
     catch(error){
         return next(error) 
     }

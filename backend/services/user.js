@@ -31,13 +31,12 @@ const loginUser = async (loginData)=>{
 const findProfileData = async (uuid) =>{
 
     if(uuid){
-        console.log(uuid)
         const user = await db.userRepo.FindByUuid(uuid)
         if(user){
             
             return {message : "user found",  user : user.toObject()}
         }
-        throw new errors.NotFoundError(`user with uuid : ${uuid} was not found`)
+        throw new errors.NotFoundError(`user ${uuid} was not found`)
     }
     throw new Error('uuid not defined') //to FIX
 }
