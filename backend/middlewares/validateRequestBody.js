@@ -2,15 +2,19 @@ const errors = require('../utils/error/appError')
 
 function validateRequest(schema, property = 'body'){
   return (req, res, next) => {
-    const { error } = schema.validate(req[property]);
+    const { error } = schema.validate(req[property], { abortEarly: false });
     
-    console.log('VALIDATE REQUEST')
-
     if (error) {
-      //console.log(error)
-      let message = error.details.map(detail => detail.message).join('\n')
-      next(new errors.ValidationError(message))
+      logger.debug(`Valid request body : ${false}`);
+
+      let message = error.details.map(detail => detail.message);
+
+      message = message.map(str => str.replace(/"(.*?)"/, '$1:')).join(';');
+
+      next(new errors.ValidationError(message));
+      return; 
     }
+    logger.debug(`Valid request body : ${true}`);
     next();
 };
 }

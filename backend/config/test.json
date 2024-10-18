@@ -1,5 +1,21 @@
 {
-    "mongoURI" : "mongodb://127.0.0.1:27017/SciClubHub", 
-    "bcryptSaltRounds" : 10, 
+    "app" : {
+        "port" : 3000
+    },
+    "mongodb" : {
+        "URI" : "mongodb://127.0.0.1:27017/SciClubHub"    
+    },
+    "bcrypt" : {
+        "saltRounds" : 10
+    },
+    "logger" : {
+        "level" : "verbose",
+        "transports" : ["file"],
+        "options" : {
+            "prettyPrint" : false 
+        }
+       
+        
+    },   
     "repositoryInUse" : "mongoose"
 }

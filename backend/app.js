@@ -1,10 +1,11 @@
 const express = require('express')
-
 const app = express()
+require('dotenv').config();
+
+require('./utils/logger/instance')
 
 const bodyParser = require('body-parser')
 
-const {logRequestCall} = require('./utils/loger')
 const {authenticate} = require('./middlewares/auth')
 const {errorHandler} = require('./middlewares/errorHandler')
 
@@ -15,11 +16,21 @@ const errors = require('./utils/error/appError')
 const validateRequest = require('./middlewares/validateRequestBody')
 const {searchValidSchema} = require('./utils/validationJoiSchema')
 
+const loggerMiddleware = require('./middlewares/logger')
+
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 
-app.use(logRequestCall)
+app.use(loggerMiddleware())
+
 app.use(authenticate)
+
+app.param( [ 'accountid', 'clubid'], (req, res, next, value, name)=>{
+    // check if accunont or club id is valid 
+    // user u123456
+    // club c123456
+    next(); 
+})
 
 app.get('/search', validateRequest(searchValidSchema), (req, res, next)=>{
 
