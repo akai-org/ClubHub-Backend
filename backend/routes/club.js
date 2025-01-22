@@ -2,8 +2,8 @@ const express = require('express');
 
 const clubRouter = express.Router({mergeParams: true}); 
 
-const clubControllers = require('../controllers/club')
-const validateRequest = require('../middlewares/validateRequestBody')
+const clubController = require('../controllers/club')
+const {validateRequest} = require('../middlewares/validateRequestBody')
 const {newProject} = require('../controllers/project')
 const {authorize} = require('../middlewares/auth')
 const {createProjectValidSchema, joinRequestAcceptValidSchema} = require('../utils/validationJoiSchema')
@@ -14,24 +14,24 @@ const {createProjectValidSchema, joinRequestAcceptValidSchema} = require('../uti
 //GET
 clubRouter.get('/', 
     authorize('user'), 
-    clubControllers.getClubProfile);
+    clubController.getClubData);
 
 clubRouter.get('/join-requests', 
     authorize('admin'), 
-    clubControllers.getJoinRequests);
+    clubController.getJoinRequests);
 
 //POST
 clubRouter.post('/join',
     authorize('user'), 
-    clubControllers.sendJoinRequest); 
+    clubController.createJoinRequest); 
 
 clubRouter.post('/join-requests', 
     authorize('admin'), 
     validateRequest(joinRequestAcceptValidSchema), 
-    clubControllers.resolveJoinRequest);
+    clubController.resolveJoinRequest);
 
 clubRouter.post('/project',  
-    validateRequest(createProjectValidSchema), //authorize(member) /* await checkMembership(req.user.uuid, {university : params.university, clubname : params.clubname })*/ */
+    validateRequest(createProjectValidSchema),
     newProject)
 
 module.exports = clubRouter;

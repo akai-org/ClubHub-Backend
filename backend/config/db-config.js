@@ -1,7 +1,6 @@
 const mongoose = require('mongoose');
-const {getCurrTime} = require('../utils/time')
 const config = require('config')
-const dbURI = config.get('mongodb.URI')
+const dbURI =  process.env.MONGO_URI || config.get('mongodb.URI')
 
 const connectDB = async () => {
   try {
@@ -12,7 +11,7 @@ const connectDB = async () => {
     mongoose.connection.on('disconnecting', () => logger.verbose('MongoDB disconnecting'));
     mongoose.connection.on('close', () => logger.verbose('MongoDB is closed'));
 
-    await mongoose.connect("dbURI", {/* options for mongoDB */});
+    await mongoose.connect(dbURI, {/* options for mongoDB */});
 
   } catch (err) {
     logger.fatal("MongoDB not connected", {error : err.toString()})

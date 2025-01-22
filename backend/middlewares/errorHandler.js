@@ -13,7 +13,6 @@ const prodError = (err, res) =>{
 }
 
 const devError = (err, res) =>{
-
   logger.error(`[${err.name}] ${err.message.split(';').join(', ')}`)
   res.status(err.statusCode).json({
       dev : true, 
@@ -21,16 +20,13 @@ const devError = (err, res) =>{
       error : err.name,
       message: err.description || err.message,
       stack: err instanceof errors.NotImplementedError ? err.stack : undefined,
-      //originalError :  err.originalError 
   });
 }
 
 const testError = (err, res) =>{
-  
-  logger.error(`[${err.name}] ${err.message.split(';').join(', ')}`)
   res.status(err.statusCode).json({
     dev : true, 
-    timestamp : getCurrTime(), //new Date.now().toISOString(), 
+    timestamp :  getCurrTime(), 
     error : err.name,
     message: err.description || err.message,
     stack: err instanceof errors.NotImplementedError ? err.stack : undefined,
@@ -45,10 +41,6 @@ function handleMongoErrors(err){
   if(err.name === 'MongooseError'){
     err = new Error(`Mongoose Error`)
   }
-
-  // if(err.name === 'ValidationError'){
-  //   err = new errors.ValidationError(err.message)
-  // }
   return err
 }
 
@@ -62,6 +54,8 @@ const errorHandlerMiddleware = (err, req, res, next) =>{
 
   let apiError = new errors.APIError(err)  
   
+  logger.error(`[${err.name}] ${err.message.split(';').join(', ')}`)
+
   if (process.env.NODE_ENV === "development") {
     devError(apiError, res);
     return;

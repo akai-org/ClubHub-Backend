@@ -87,6 +87,12 @@ class InternalServerError extends BaseError{
   }
 }
 
+class ImmutableFieldError extends BaseError{
+  constructor(message){
+    super("ImmutableFieldError", message)
+  }
+}
+
 module.exports =  { 
   BaseError,
   APIError, 
@@ -99,4 +105,5 @@ module.exports =  {
   AuthenticationError,
   AuthorizationError,
   AlreadyExistsError, 
+  ImmutableFieldError,
 }

@@ -45,9 +45,6 @@ const logger = winston.createLogger({
 });
 winston.addColors(customLevels.colors);
 
-logger.info("created logger")
-logger.silly("test")
-
 if(loggerConfig.transports && Array.isArray(loggerConfig.transports) && loggerConfig.transports.length){
   logger.clear(); 
 }
@@ -80,7 +77,7 @@ if (loggerConfig.transports.includes('file')) {
     level: loggerConfig.level,
     format : winston.format.combine( 
       winston.format.label({label : env}),
-      myFormat()
+      myFormat
       )
   }));
 }

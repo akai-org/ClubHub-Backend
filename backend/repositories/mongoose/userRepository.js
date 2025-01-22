@@ -1,4 +1,5 @@
 const BaseMongooseRepository = require('./BaseMongooseRepository')
+const errors = require('../../utils/error/appError')
 
 const userSchema = {
   uuid: {
@@ -41,32 +42,55 @@ class UserRepository extends BaseMongooseRepository {
   async insert(userdata) {
     const user = this.model(userdata)
     await user.save()
-    return user.toObject()
+    return user.toObject();
   }
 
   async FindByUuid(id) {
     const user = await this.model.findOne({ uuid: id }).select('-password -__v -_id');
     if (user) {
-      return user
+      return user.toObject()
     }
-    return false
+    return undefined
   }
 
   async FindByEmail(email) {
     const user = await this.model.findOne({ email: email });
     if (user) {
-      return user
+      return user.toObject();
     }
-    return false
+    return undefined
   }
 
   async FindByUserName(username) {
     const user = await this.model.findOne({ username: username });
     if (user) {
-      return user
+      return user.toObject()
     }
-    return false
+    return undefined
   }
+
+  async updateOne(queries, data){
+    let immutableFields = ['uuid', 'createdAt', 'email']; 
+    let incorectFields = [];
+
+    immutableFields.forEach(field => {
+      if(data[field]){
+        incorectFields.push(`${field} is immutable property`);
+      }
+    });
+
+    if(incorectFields.length > 0){
+      let errorMessage = incorectFields.join(";"); 
+      throw new errors.ImmutableFieldError(errorMessage);
+    }
+
+    let res = await this.model.updateOne(queries, {$set :data}); 
+    if(res.matchedCount === 0){
+      throw new errors.NotFoundError("User not Found"); 
+    }
+    return {user : `users modified: ${res.modifiedCount}`}; 
+  }
+
 }
 
 module.exports = UserRepository

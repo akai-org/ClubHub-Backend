@@ -1,6 +1,6 @@
 const logger = require('../utils/logger/instance');
 
-loggerMiddleware = (options)=>{
+exports.loggerMiddleware = (options)=>{
     return function (req, res, next){
         const start = Date.now();
         const originalSend = res.send; 
@@ -8,7 +8,7 @@ loggerMiddleware = (options)=>{
         res.send = function (body) {
             responseBody = body;
             return originalSend.apply(this, arguments);
-          };
+        };
     
         res.on('finish', ()=>{
             logger.info( {
@@ -31,8 +31,3 @@ loggerMiddleware = (options)=>{
         next(); 
     }
 }
-
-
-
-
-module.exports = loggerMiddleware; 

@@ -1,12 +1,18 @@
+const { verbose } = require("./utils/logger/instance");
+
 module.exports = {
-  testEnvironment: 'node', // Use the Node.js environment for testing
-  roots: ['<rootDir>'], // Specify directories to search for tests
+  testEnvironment: 'node',
+  testPathIgnorePatterns: ["<rootDir>/__test__/manual.test.js"],
+  roots: ['<rootDir>/__test__'],
   testMatch: ['**/?(*.)+(spec|test).[tj]s?(x)'],
-  setupFilesAfterEnv: ['./jest.setup.js'], // Path to your global setup file
+  setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
   displayName: {
     name: 'CLUB HUB',
     color: 'blue',
   },
-  verbose: true,
+  noStackTrace: false, 
+  detectOpenHandles: true, 
+  verbose: true, 
   reporters: ['default'],
+  
   };

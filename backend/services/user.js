@@ -4,7 +4,7 @@ const {createAuthToken} = require('../utils/authtoken')
 const bcrypt = require('bcrypt');
 const {hash} = require('../utils/hash');
 
-const registerUser = async (userData) => {
+exports.registerUser = async (userData) => {
     userData.membership = [];
     userData.password = await hash(userData.password)
     userData.uuid = 'u' + Date.now()
@@ -14,7 +14,7 @@ const registerUser = async (userData) => {
     return { uuid : userData.uuid}     
 };
 
-const loginUser = async (loginData)=>{
+exports.loginUser = async (loginData)=>{
     const user = await db.userRepo.FindByEmail(loginData.email); 
     if(!user){
         throw new errors.AuthenticationError('Invalid email or password')
@@ -28,20 +28,28 @@ const loginUser = async (loginData)=>{
     throw new errors.AuthenticationError('Invalid email or password')
 }
 
-const findProfileData = async (uuid) =>{
+exports.updateUser = async (uuid, userPropertiesToUpdate)=>{
+    let {error, user} = await db.userRepo.updateOne({uuid}, userPropertiesToUpdate);
+    if(error){
+        throw error
+    }
+    return {user}; 
+}
+
+exports.findProfileData = async (uuid) =>{
 
     if(uuid){
         const user = await db.userRepo.FindByUuid(uuid)
         if(user){
             
-            return {message : "user found",  user : user.toObject()}
+            return {message : "user found",  user}
         }
         throw new errors.NotFoundError(`user ${uuid} was not found`)
     }
     throw new Error('uuid not defined') //to FIX
 }
 
-const checkMembership = async (uuid , {university, clubname}) =>{
+exports.checkMembership = async (uuid , {university, clubname}) =>{
     let club = await db.scienceClubRepo.findOneByQuery({university, name : clubname})
 
     if(!club){
@@ -52,8 +60,4 @@ const checkMembership = async (uuid , {university, clubname}) =>{
         return true
     }
     return false
-}
-
-module.exports = {
-    registerUser, loginUser, findProfileData, checkMembership
 }

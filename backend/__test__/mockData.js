@@ -1,29 +1,30 @@
-const user1 = {
-    email : "test@gmail.com",
-    password : "testPasswd", 
-    username: "Serafin",
-    firstname : "Sew",
-    lastname : "Was",
+const {createAuthToken} = require('../utils/authtoken');
+
+exports.user1 = {
+    "uuid": "u0000000001",
+    "username": "user1",
+    "firstname": "user1_firstname",
+    "lastname": "user1_lastname",
+    "email": "test1@email.com",
+    "password": "user1_password",
+    "authToken" : createAuthToken('u0000000001')
 }
 
-const club = {
-    name : "AKAI",
-    univeristy : "PoanznUniversityOfTechnology",
-    description : "test_description", 
-    rules : "test_rules", 
-    isopen : false
+exports.club1 = {
+    "uuid" : "c123456789",
+    "name": "AKAI",
+    "isopen": false,
+    "university": "PoznanUniversityOfTechnology",
+    "description" : "test_descritpion",
+    "rules" : "test_rules"
 }
 
-let user2 = {
-    email : "test2@gmail.com",
-    password : "testPasswd", 
-    username: "Serafin2",
-    firstname : "Sew2",
-    lastname : "Was2",
-}    
-
-module.exports = {
-    user1,
-    user2,
-    club
-}
+exports.user2 =  {
+    "uuid": "u0000000002",
+    "username": "user2",
+    "firstname": "user2_firstname",
+    "lastname": "user2_lastname",
+    "email": "test2@email.com",
+    "password": "user2_password",
+    "authToken" : createAuthToken('u0000000002')
+}   

@@ -1,3 +1,4 @@
+const { http } = require('winston')
 const httpStatusCode = require('../httpStatusCodes')
 
 errorStatusCodes = {
@@ -10,7 +11,8 @@ errorStatusCodes = {
     'InternalServerError' : httpStatusCode.INTERNAL_SERVER_ERROR,
     'AuthenticationError' : httpStatusCode.UNAUTHORIZED, 
     'AuthorizationError' : httpStatusCode.UNAUTHORIZED,
-    'AlreadyExistsError' : httpStatusCode.CONFLICT
+    'AlreadyExistsError' : httpStatusCode.CONFLICT, 
+    'ImmutableFieldError' : httpStatusCode.FORBIDDEN,
 }
 
 module.exports = errorStatusCodes

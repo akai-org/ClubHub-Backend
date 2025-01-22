@@ -1,15 +1,17 @@
 const express = require('express');
 
-const {register, login , accountData} = require('../controllers/user')
-const validateRequest = require('../middlewares/validateRequestBody')
-const {loginValidSchema, registerValidSchema} = require('../utils/validationJoiSchema')
-
-
+const userController= require('../controllers/user')
+const {validateRequest} = require('../middlewares/validateRequestBody')
+const {loginValidSchema, registerValidSchema, userValidSchema} = require('../utils/validationJoiSchema')
 // /account/:uuid
 const accountRouter = express.Router({mergeParams: true}); 
 
 // account Router: /account/:uuid
-accountRouter.get('/', accountData)
+accountRouter.get('/', userController.getUserData)
+
+accountRouter.patch('/',
+    validateRequest(userValidSchema),
+    userController.updateUser)
 
 // /
 const userRouter = express.Router();
@@ -17,11 +19,11 @@ const userRouter = express.Router();
 // user Router: /
 userRouter.post('/register', 
     validateRequest(registerValidSchema), 
-    register);
+    userController.registerUser);
 
 userRouter.post('/login', 
     validateRequest(loginValidSchema), 
-    login);
+    userController.loginUser);
 
 userRouter.use('/account/:uuid', 
     accountRouter)

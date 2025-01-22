@@ -3,17 +3,17 @@ const express = require('express')
 univeristyParamRouter = express.Router({mergeParams: true})
 
 const {authorize} = require('../middlewares/auth')
-const validateRequest = require('../middlewares/validateRequestBody')
+const {validateRequest} = require('../middlewares/validateRequestBody')
 const {clubCreateValidSchema} = require('../utils/validationJoiSchema')
 
 const clubRouter = require("./club")
-const clubControlers = require('../controllers/club')
+const clubControler = require('../controllers/club')
 
 
 univeristyParamRouter.post('/club-create', 
     authorize('user'), 
     validateRequest(clubCreateValidSchema), 
-    clubControlers.Create); 
+    clubControler.createClub); 
 
 
 univeristyParamRouter.use('/:clubname', 

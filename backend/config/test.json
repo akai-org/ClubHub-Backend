@@ -1,10 +1,4 @@
 {
-    "app" : {
-        "port" : 3000
-    },
-    "mongodb" : {
-        "URI" : "mongodb://127.0.0.1:27017/SciClubHub"    
-    },
     "bcrypt" : {
         "saltRounds" : 10
     },
@@ -14,8 +8,6 @@
         "options" : {
             "prettyPrint" : false 
         }
-       
-        
     },   
     "repositoryInUse" : "mongoose"
 }

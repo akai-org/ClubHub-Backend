@@ -1,6 +1,6 @@
 {
     "app" : {
-        "port" : 3000
+        "name" : "ClubHub"
     },
     "mongodb" : {
         "URI" : "mongodb://127.0.0.1:27017/SciClubHub"    

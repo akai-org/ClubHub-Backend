@@ -1,44 +1,31 @@
 //User Controllers /controllers/user.js
-const {registerUser, loginUser, findProfileData} = require('../services/user')
+const userService = require('../services/user');
+const httpStatusCode = require('../utils/httpStatusCodes');
 
-
-const register = async (req, res, next) => {
+exports.registerUser = async (req, res, next) => {
     let serviceResult; 
-
-    try{ serviceResult = await registerUser(req.body) }
-    catch(error) {
-        return next(error)
-    }
-    res.status(200).json(serviceResult)
+    serviceResult = await userService.registerUser(req.body)
+    res.status(httpStatusCode.OK).json(serviceResult)
 }
 
-const login = async (req, res, next)=>{
+exports.loginUser = async (req, res, next)=>{
 
     if(req.authenticated){
-        res.status(200).json({message : "User Authenticated by auth token"}); 
-        return
+        return res.status(httpStatusCode.OK).json({message : "User Authenticated by auth token"}); 
     }
     let result;
-
-    //service 
-    try{ result = await loginUser(req.body) }
-    catch(error){
-        return next(error) 
-    }
-    res.status(200).json(result)
+    result = await userService.loginUser(req.body);
+    res.status(httpStatusCode.OK).json(result);
 }
 
-const accountData = async (req, res, next) =>{
-
+exports.getUserData = async (req, res, next) =>{
     let result
-
-    try{ 
-        result = await findProfileData(req.params.uuid) 
-    }
-    catch(error){
-        return next(error)
-    }
-    res.status(200).json(result)
+    result = await userService.findProfileData(req.params.uuid);
+    res.status(httpStatusCode.OK).json(result);
 }
 
-module.exports = {register ,login, accountData}
+exports.updateUser = async (req, res, next)=>{
+
+    let {user} = await userService.updateUser(req.params.uuid, req.body);
+    res.status(httpStatusCode.OK).json({user});
+}

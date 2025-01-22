@@ -15,12 +15,12 @@ const isopen = Joi.boolean().optional();
 const description = Joi.string().max(1000).required()
 const rules = Joi.string().optional(); 
 
-const loginValidSchema = Joi.object({ 
+exports.loginValidSchema = Joi.object({ 
     email,
     password
 })
 
-const registerValidSchema = Joi.object({
+exports.registerValidSchema = Joi.object({
     email,
     password, 
     username,
@@ -28,7 +28,7 @@ const registerValidSchema = Joi.object({
     lastname,
 })
 
-const editUserValidSchema = Joi.object({
+exports.editUserValidSchema = Joi.object({
     uniList : Joi.alternatives().try( 
         Joi.object({
             push : Joi.array().items(Joi.string()).optional(), 
@@ -41,7 +41,18 @@ const editUserValidSchema = Joi.object({
 
 })
 
-const clubCreateValidSchema = Joi.object({
+exports.userValidSchema = Joi.object({
+    uuid : Joi.string().optional(),
+    createdAt: Joi.string().optional(), 
+    username: Joi.string().optional(),
+    firstname: Joi.string().optional(),
+    lastname: Joi.string().optional(),
+    password: Joi.string().optional(),
+})
+
+exports
+
+exports.clubCreateValidSchema = Joi.object({
     name : clubname, 
     university, 
     isopen,
@@ -49,7 +60,7 @@ const clubCreateValidSchema = Joi.object({
     rules,
 })
 
-const searchValidSchema = Joi.object({
+exports.searchValidSchema = Joi.object({
     meet : Joi.boolean().optional(), 
     event : Joi.boolean().optional(), 
     project : Joi.boolean().optional(), 
@@ -58,7 +69,7 @@ const searchValidSchema = Joi.object({
     uuid : Joi.string().optional()
 }).unknown()
 
-const createProjectValidSchema = Joi.object({
+exports.createProjectValidSchema = Joi.object({
     //required
     name : Joi.string().required(), 
     description : Joi.string().required(), 
@@ -73,17 +84,7 @@ const createProjectValidSchema = Joi.object({
 
 })
 
-const joinRequestAcceptValidSchema = Joi.object({
+exports.joinRequestAcceptValidSchema = Joi.object({
     uuid, 
     accept : Joi.boolean(), 
 })
-
-module.exports = {
-    loginValidSchema,
-    registerValidSchema,
-    clubCreateValidSchema,
-    editUserValidSchema,
-    searchValidSchema,
-    createProjectValidSchema, 
-    joinRequestAcceptValidSchema
-}
