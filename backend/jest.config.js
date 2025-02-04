@@ -1,4 +1,5 @@
-const { verbose } = require("./utils/logger/instance");
+const config = require('./setup/config')
+config.load()
 
 module.exports = {
   testEnvironment: 'node',

@@ -1,4 +1,4 @@
-const db = require('../repositories/'+ require('config').get('repositoryInUse' )+'/index');
+const db = require('../repositories/mongoose/index'); 
 const errors = require('../utils/error/appError')
 
 const create = async (clubData)=>{

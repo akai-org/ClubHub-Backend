@@ -5,7 +5,7 @@ class MongooseErroHandler {
     transformError(err){
         if(err && (err.code === 11000 || err.code===11001)){
             
-            console.log(err.keyPattern)
+            //console.log(err.keyPattern)
             return new erorrs.AlreadyInUseError(err)
         }
         return new erorrs.NotImplementedError(err);

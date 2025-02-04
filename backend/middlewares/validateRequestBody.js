@@ -1,4 +1,5 @@
 const errors = require('../utils/error/appError');
+const logger = require('../utils/logger/instance')
 
 exports.validateRequest = (schema, options = {errType : errors.ValidationError, property : 'body'}) => {
   return (req, res, next) => {

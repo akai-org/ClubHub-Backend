@@ -1,6 +1,8 @@
 const db = require('../repositories/mongoose/index')
 const {validateAuthToken} = require('../utils/authtoken')
 
+const logger = require('../utils/logger/instance')
+
 const errors = require('../utils/error/appError');
 require('dotenv').config()
 // request -> authentication -> autorization -> route controller -> ...

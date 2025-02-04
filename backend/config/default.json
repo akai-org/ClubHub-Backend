@@ -1,23 +1,25 @@
 {
     "app" : {
-        "name" : "ClubHub"
-    },
-    "mongodb" : {
-        "URI" : "mongodb://127.0.0.1:27017/SciClubHub"    
+        "name" : "ClubHub",
+        "port" : "${PORT}"
     },
     "bcrypt" : {
         "saltRounds" : 10
     },
+    "mongodb" : {
+        "URI" : "${MONGODB_URI}"
+    }, 
     "logger" : {
-        "level" : "debug",
-        "mongodb" : {
-            "URI" : "mongodb://127.0.0.1:27017/SciClubHub", 
-            "collection" : "logs"
-        },
-        "transports" : ["console"],
+        "level" : "info",
+        "transports" : ["file", "console"],
         "options" : {
             "prettyPrint" : false 
+        }, 
+        "mongodb" :{
+          "URI" : "${MONGODB_URI}"
         }
     },  
-    "repositoryInUse" : "mongoose"
+    "test": { 
+        "verbose" : false
+    }
 }

@@ -26,6 +26,19 @@ class APIError extends BaseError {
   }
 }
 
+class ConfigurationError extends BaseError{
+  constructor(description) {
+    super("ConfigurationError", description);
+  }
+}
+
+class DBconnectionError extends BaseError{
+  constructor(description) {
+    super("DBconnectionError", description);
+  }
+}
+
+
 class ValidationError extends BaseError{
   constructor(description) {
     super("ValidationError", description);
@@ -106,4 +119,6 @@ module.exports =  {
   AuthorizationError,
   AlreadyExistsError, 
   ImmutableFieldError,
+  ConfigurationError,
+  DBconnectionError,
 }

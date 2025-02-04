@@ -6,7 +6,7 @@ const config = require('config');
 const path = require('path');
 
 const env = process.env.NODE_ENV || 'production';
-const loggerConfig = config.get('logger');
+const loggerConfig = config.logger;
 
 const customLevels = {
   levels: {
@@ -30,10 +30,7 @@ const customLevels = {
     silly: "magenta"
   }
 }
-/*Font styles: bold, dim, italic, underline, inverse, hidden, strikethrough.
-Font foreground colors: black, red, green, yellow, blue, magenta, cyan, white, gray, grey.
-Background colors: blackBG, redBG, greenBG, yellowBG, blueBG magentaBG, cyanBG, whiteBG
-*/
+
 const logger = winston.createLogger({
   level: loggerConfig.level,
   levels: customLevels.levels,
@@ -44,6 +41,8 @@ const logger = winston.createLogger({
   transports : [new winston.transports.Console()] //default transport is none is specified
 });
 winston.addColors(customLevels.colors);
+
+
 
 if(loggerConfig.transports && Array.isArray(loggerConfig.transports) && loggerConfig.transports.length){
   logger.clear(); 

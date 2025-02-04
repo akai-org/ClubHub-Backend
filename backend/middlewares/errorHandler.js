@@ -1,6 +1,8 @@
 const errors = require('../utils/error/appError');
 const {getCurrTime} = require('../utils/time')
 
+const logger = require('../utils/logger/instance')
+
 require('dotenv').config()
 
 const prodError = (err, res) =>{
@@ -54,7 +56,7 @@ const errorHandlerMiddleware = (err, req, res, next) =>{
 
   let apiError = new errors.APIError(err)  
   
-  logger.error(`[${err.name}] ${err.message.split(';').join(', ')}`)
+  logger.error(`[${err.name}] ${err.message.split(';').join(', ')}`, err)
 
   if (process.env.NODE_ENV === "development") {
     devError(apiError, res);
